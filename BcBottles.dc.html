@@ -13,20 +13,22 @@
 <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
 </div></sc-if>
 <helmet><style>@keyframes bcTurn{from{opacity:0;transform:rotateY(-40deg) scale(0.985)}to{opacity:1;transform:none}}</style></helmet>
-<section style="max-width:720px;margin:0 0 46px">
-<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:#57A374;margin:0 0 18px">The Story</p>
-<p style="font-weight:700;font-size:clamp(20px,2.8vw,28px);line-height:1.26;letter-spacing:-0.015em;color:#F7F4EA;margin:0 0 18px;text-wrap:pretty">Before becoming a cocktail, Negroni is a surname, that of Count Camillo Negroni. While he was a Count, he was also an adventurer — a globetrotter, horseman and fencer, an inveterate gambler and a heavy drinker.</p>
-<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0 0 12px;text-wrap:pretty">Having visited London between 1919 and 1920, he fell in love with gin. Upon his return, he visited his favourite bar, Café Casoni, to seek out drinks using gin.</p>
-<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0;text-wrap:pretty">He asked the barman, Fosco Scarselli, to strengthen his go-to cocktail, the Americano, with "a sprinkle of gin." The barman garnished it with orange instead of lemon, and the iconic Negroni was born.</p>
-</section>
 <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
 <input type="search" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a bottle or a flavour note…" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<button onClick="{{ toggleFilters }}" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #22251C;background:#0B0B0B" style-hover="border-color:#3A3E2E">
+<span style="flex:1 1 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#E5B84B">Filters</span>
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8A8674">{{ catLabel }}</span>
+<sc-if value="{{ filtersOpen }}"><span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#E5B84B">—</span></sc-if>
+<sc-if value="{{ filtersShut }}"><span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#55524A">+</span></sc-if>
+</button>
+<sc-if value="{{ filtersOpen }}">
 <div style="display:flex;flex-wrap:wrap;gap:8px">
 <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="8">
 <sc-if value="{{ chip.on }}"><button onClick="{{ chip.pick }}" style="flex:0 0 auto;display:flex;align-items:center;gap:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:10px 16px;border:2px solid #E5B84B;background:#E5B84B;color:#000"><svg viewBox="0 0 8 8" style="width:7px;height:7px"><rect width="8" height="8" fill="#000"></rect></svg>{{ chip.label }}</button></sc-if>
 <sc-if value="{{ chip.off }}"><button onClick="{{ chip.pick }}" style="flex:0 0 auto;display:flex;align-items:center;gap:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:10px 16px;border:2px solid #22251C;background:#000;color:#8A8674" style-hover="border-color:#3A3E2E;color:#F7F4EA"><svg viewBox="0 0 8 8" style="width:7px;height:7px"><rect width="8" height="8" fill="{{ chip.dot }}"></rect></svg>{{ chip.label }}</button></sc-if>
 </sc-for>
 </div>
+</sc-if>
 </div>
 <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
 <section style="margin-bottom:52px">
@@ -74,7 +76,7 @@
 <script type="text/x-dc" data-dc-script>
 const CAT = { aperitivo:'#de8173', vermouth:'#d08b97', amari:'#d39e69', liqueurs:'#d095be', rum:'#c78660', tequila:'#bac680', mezcal:'#c8927e', vodka:'#9cb9c9', gin:'#78ba9b', scotch:'#dbbc76', irish:'#d5b090', american:'#d18661', japanese:'#aca5c0', brandy:'#c76d57' };
 class Component extends DCLogic {
-  state = { data: null, q: '', cat: 'all', flipped: {}, err: '' };
+  state = { data: null, q: '', cat: 'all', flipped: {}, err: '', filtersOpen: false };
   componentDidMount() {
     if (window.BC_DATA && window.BC_DATA.bottles) { this.setState({ data: window.BC_DATA.bottles }); return; }
     fetch(new URL('data/bottles.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/bottles.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('bottles.json', e); this.setState({ err: String(e && e.message || e) }); });
@@ -82,13 +84,15 @@ class Component extends DCLogic {
   renderVals() {
     const d = this.state.data;
     const onSearch = e => this.setState({ q: e.target.value });
-    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '' };
+    const toggleFilters = () => this.setState(s => ({ filtersOpen: !s.filtersOpen }));
+    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All' };
     const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
+    const nameHit = q ? d.bottles.some(b => b.name.toLowerCase().indexOf(q) > -1) : false;
     const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
       const on = cat === (c.slug || 'all');
       return {
         label: (c.title || 'All').replace(' / ', ' & '), dot: CAT[c.slug] || '#E5B84B', on, off: !on,
-        pick: () => this.setState({ cat: c.slug || 'all' })
+        pick: () => this.setState({ cat: c.slug || 'all', filtersOpen: false })
       };
     });
     const sections = [];
@@ -97,6 +101,7 @@ class Component extends DCLogic {
       const color = CAT[c.slug] || '#E5B84B';
       const items = d.bottles.filter(b => b.slug === c.slug).filter(b => {
         if (!q) return true;
+        if (nameHit) return b.name.toLowerCase().indexOf(q) > -1;
         return (b.name + ' ' + b.desc.join(' ') + ' ' + b.origin + ' ' + b.serves.join(' ') + ' ' + (b.fact || '') + ' ' + (b.edge || '') + ' ' + (b.tier || '')).toLowerCase().includes(q);
       }).map(b => {
         const key = b.name;
@@ -114,7 +119,12 @@ class Component extends DCLogic {
       });
       if (items.length) sections.push({ slug: c.slug, title: c.title, color, tally: items.length, items });
     });
-    return { q: this.state.q, onSearch, chips, sections, isEmpty: sections.length === 0 };
+    const activeCat = d.categories.filter(c => c.slug === cat)[0];
+    return {
+      q: this.state.q, onSearch, chips, sections, isEmpty: sections.length === 0,
+      toggleFilters, filtersOpen: this.state.filtersOpen, filtersShut: !this.state.filtersOpen,
+      catLabel: activeCat ? activeCat.title.replace(' / ', ' & ') : 'All categories'
+    };
   }
 }
 </script>

@@ -16,6 +16,7 @@
 <style>html,body{margin:0;padding:0;background:#000}*{box-sizing:border-box}::selection{background:#E5B84B;color:#000}input,button,select{font:inherit}a{color:#E5B84B}a:hover{color:#F2D183}</style>
 </helmet>
 <div style="min-height:100vh;background:#000;color:#F7F4EA;font-family:Archivo,system-ui,sans-serif;-webkit-font-smoothing:antialiased">
+<sc-if value="{{ isHome }}">
 <header style="max-width:1180px;margin:0 auto;padding:34px 24px 0">
 <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:#57A374;margin:0 0 22px">Firenze · since 1919</p>
 <h1 style="font-weight:900;font-size:clamp(46px,11vw,124px);line-height:0.82;letter-spacing:-0.045em;text-transform:uppercase;margin:0;color:#F7F4EA">Bar<br>Conte</h1>
@@ -24,8 +25,15 @@
 <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#6E6A5A;margin:0">163 bottles · 162 origins verified</p>
 </div>
 </header>
-<nav style="position:sticky;top:0;z-index:30;background:rgba(0,0,0,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin:26px 0 40px">
-<div style="max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;flex-wrap:wrap;gap:8px">
+</sc-if>
+<nav style="position:sticky;top:0;z-index:30;background:rgba(0,0,0,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin:26px 0 40px;border-bottom:2px solid #16180F">
+<div style="max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;flex-wrap:wrap;gap:8px">
+<sc-if value="{{ notHome }}">
+<button onClick="{{ goHome }}" style="all:unset;flex:0 0 auto;cursor:pointer;display:flex;flex-direction:column;gap:5px;margin-right:14px;padding:2px 0" style-hover="opacity:0.75">
+<span style="font-weight:900;font-size:17px;line-height:0.9;letter-spacing:-0.035em;text-transform:uppercase;color:#F7F4EA">Bar Conte</span>
+<span style="display:block;height:3px;background:#E5B84B"></span>
+</button>
+</sc-if>
 <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
 <sc-if value="{{ t.on }}"><button onClick="{{ t.pick }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #E5B84B;background:#E5B84B;color:#000;padding:11px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase">{{ t.label }}</button></sc-if>
 <sc-if value="{{ t.off }}"><button onClick="{{ t.pick }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #22251C;background:#000;color:#8A8674;padding:11px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase" style-hover="border-color:#57A374;color:#F7F4EA">{{ t.label }}</button></sc-if>
@@ -33,6 +41,14 @@
 </div>
 </nav>
 <main style="max-width:1180px;margin:0 auto;padding:0 24px 90px">
+<sc-if value="{{ isHome }}">
+<section style="max-width:720px;margin:0 0 46px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:#57A374;margin:0 0 18px">The Story</p>
+<p style="font-weight:700;font-size:clamp(20px,2.8vw,28px);line-height:1.26;letter-spacing:-0.015em;color:#F7F4EA;margin:0 0 18px;text-wrap:pretty">Before becoming a cocktail, Negroni is a surname, that of Count Camillo Negroni. While he was a Count, he was also an adventurer — a globetrotter, horseman and fencer, an inveterate gambler and a heavy drinker.</p>
+<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0 0 12px;text-wrap:pretty">Having visited London between 1919 and 1920, he fell in love with gin. Upon his return, he visited his favourite bar, Café Casoni, to seek out drinks using gin.</p>
+<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0;text-wrap:pretty">He asked the barman, Fosco Scarselli, to strengthen his go-to cocktail, the Americano, with "a sprinkle of gin." The barman garnished it with orange instead of lemon, and the iconic Negroni was born.</p>
+</section>
+</sc-if>
 <div hidden="{{ hideCards }}"><dc-import name="BcBottles" hint-size="100%,700px"></dc-import></div>
 <div hidden="{{ hideRecipes }}"><dc-import name="BcRecipes" hint-size="100%,600px"></dc-import></div>
 <div hidden="{{ hideChecklist }}"><dc-import name="BcChecklist" hint-size="100%,600px"></dc-import></div>
@@ -43,14 +59,16 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { view: 'cards' };
+  state = { view: 'home' };
   renderVals() {
     const v = this.state.view;
     const tabs = [['cards', 'Bottles'], ['recipes', 'Recipes'], ['checklist', 'Checklist'], ['training', 'Training']].map(([k, label]) => ({
-      label, on: v === k, off: v !== k, pick: () => this.setState({ view: k })
+      label, on: v === k, off: v !== k, pick: () => { this.setState({ view: k }); try { window.scrollTo(0, 0); } catch (e) {} }
     }));
     return {
       tabs,
+      isHome: v === 'home', notHome: v !== 'home',
+      goHome: () => { this.setState({ view: 'home' }); try { window.scrollTo(0, 0); } catch (e) {} },
       hideCards: v !== 'cards', hideTraining: v !== 'training', hideRecipes: v !== 'recipes', hideChecklist: v !== 'checklist'
     };
   }
