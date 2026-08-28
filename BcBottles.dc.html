@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>@keyframes bcTurn{from{opacity:0;transform:rotateY(-40deg) scale(0.985)}to{opacity:1;transform:none}}</style></helmet>
+<section style="max-width:720px;margin:0 0 46px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:#57A374;margin:0 0 18px">The Story</p>
+<p style="font-weight:700;font-size:clamp(20px,2.8vw,28px);line-height:1.26;letter-spacing:-0.015em;color:#F7F4EA;margin:0 0 18px;text-wrap:pretty">Before becoming a cocktail, Negroni is a surname, that of Count Camillo Negroni. While he was a Count, he was also an adventurer — a globetrotter, horseman and fencer, an inveterate gambler and a heavy drinker.</p>
+<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0 0 12px;text-wrap:pretty">Having visited London between 1919 and 1920, he fell in love with gin. Upon his return, he visited his favourite bar, Café Casoni, to seek out drinks using gin.</p>
+<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0;text-wrap:pretty">He asked the barman, Fosco Scarselli, to strengthen his go-to cocktail, the Americano, with "a sprinkle of gin." The barman garnished it with orange instead of lemon, and the iconic Negroni was born.</p>
+</section>
+<div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
+<input type="search" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a bottle or a flavour note…" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ chips }}" as="chip" hint-placeholder-count="8">
+<sc-if value="{{ chip.on }}"><button onClick="{{ chip.pick }}" style="flex:0 0 auto;display:flex;align-items:center;gap:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:10px 16px;border:2px solid #E5B84B;background:#E5B84B;color:#000"><svg viewBox="0 0 8 8" style="width:7px;height:7px"><rect width="8" height="8" fill="#000"></rect></svg>{{ chip.label }}</button></sc-if>
+<sc-if value="{{ chip.off }}"><button onClick="{{ chip.pick }}" style="flex:0 0 auto;display:flex;align-items:center;gap:9px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:10px 16px;border:2px solid #22251C;background:#000;color:#8A8674" style-hover="border-color:#3A3E2E;color:#F7F4EA"><svg viewBox="0 0 8 8" style="width:7px;height:7px"><rect width="8" height="8" fill="{{ chip.dot }}"></rect></svg>{{ chip.label }}</button></sc-if>
+</sc-for>
+</div>
+</div>
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+<section style="margin-bottom:52px">
+<div style="display:flex;align-items:baseline;gap:16px;border-bottom:3px solid #E5B84B;padding-bottom:12px;margin-bottom:22px">
+<svg viewBox="0 0 10 10" style="width:9px;height:9px;flex:0 0 auto"><rect width="10" height="10" fill="{{ sec.color }}"></rect></svg>
+<h2 style="font-weight:900;font-size:clamp(20px,3vw,32px);line-height:1;letter-spacing:-0.03em;text-transform:uppercase;margin:0;color:#F7F4EA;flex:1">{{ sec.title }}</h2>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#6E6A5A">{{ sec.tally }}</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px">
+<sc-for list="{{ sec.items }}" as="b" hint-placeholder-count="6">
+<div style="height:400px">
+<button onClick="{{ b.flip }}" style="all:unset;display:block;width:100%;height:100%;cursor:pointer;position:relative">
+<sc-if value="{{ b.showFront }}">
+<div style="position:absolute;inset:0;animation:bcTurn 0.4s cubic-bezier(.2,.85,.35,1) both;border:2px solid #22251C;background:#0B0B0B;display:flex;flex-direction:column;padding:18px 18px 16px" style-hover="border-color:#3A3E2E">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#57A374">{{ b.catShort }}</span><sc-if value="{{ b.isPremium }}"><span style="font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#000;background:#E5B84B;padding:3px 7px">Premium</span></sc-if></div>
+<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0">
+<sc-if value="{{ b.isFlask }}"><svg viewBox="0 0 40 60" style="width:86px;height:129px"><path d="M17 2H23V14C23 14 30 19 30 27V51C30 55.4183 26.4183 59 22 59H18C13.5817 59 10 55.4183 10 51V27C10 19 17 14 17 14V2Z" stroke="{{ b.color }}" stroke-width="1.3" fill="{{ b.color }}" fill-opacity="0.1"></path><path d="M10.3 34C10.3 34 14 37 20 37C26 37 29.7 34 29.7 34V51C29.7 55.4183 26.1183 59 21.7 59H18.3C13.8817 59 10.3 55.4183 10.3 51V34Z" fill="{{ b.color }}" fill-opacity="0.18"></path><rect x="16.5" y="5" width="7" height="4" fill="{{ b.color }}"></rect></svg></sc-if>
+<sc-if value="{{ b.isWine }}"><svg viewBox="0 0 40 60" style="width:86px;height:129px"><path d="M17 2H23V8C27 10 29 14 29 19V52C29 55.866 25.866 59 22 59H18C14.134 59 11 55.866 11 52V19C11 14 13 10 17 8V2Z" stroke="{{ b.color }}" stroke-width="1.3" fill="{{ b.color }}" fill-opacity="0.1"></path><path d="M11.2 29C11.2 29 15 32.5 20 32.5C25 32.5 28.8 29 28.8 29V52C28.8 55.866 25.666 59 21.8 59H18.2C14.334 59 11.2 55.866 11.2 52V29Z" fill="{{ b.color }}" fill-opacity="0.18"></path><rect x="16.5" y="4.5" width="7" height="3.5" fill="{{ b.color }}"></rect></svg></sc-if>
+<sc-if value="{{ b.isBottle }}"><svg viewBox="0 0 40 60" style="width:86px;height:129px"><path d="M16 2H24V10C24 10 28 13 28 18V54C28 56.7614 25.7614 59 23 59H17C14.2386 59 12 56.7614 12 54V18C12 13 16 10 16 10V2Z" stroke="{{ b.color }}" stroke-width="1.3" fill="{{ b.color }}" fill-opacity="0.1"></path><rect x="12" y="30" width="16" height="16" fill="{{ b.color }}" fill-opacity="0.18"></rect><rect x="15.5" y="5" width="5" height="4" fill="{{ b.color }}"></rect></svg></sc-if>
+</div>
+<div style="font-weight:800;font-size:19px;line-height:1;letter-spacing:-0.02em;text-transform:uppercase;color:#F7F4EA;text-align:left;text-wrap:balance">{{ b.name }}</div>
+<div style="margin-top:12px;padding-top:12px;border-top:2px solid #22251C;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">tap to flip</div>
+</div>
+</sc-if>
+<sc-if value="{{ b.showBack }}">
+<div style="position:absolute;inset:0;animation:bcTurn 0.4s cubic-bezier(.2,.85,.35,1) both;border:2px solid #E5B84B;background:#0B0B0B;display:flex;flex-direction:column;gap:11px;padding:18px;text-align:left">
+<div style="flex:1 1 auto;min-height:0;overflow-y:auto;font-size:13px;line-height:1.5;color:#F7F4EA">
+<sc-if value="{{ b.hasEdge }}"><div style="margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid #22251C"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#E5B84B;margin-bottom:6px">What sets it apart</span><span style="display:block;font-weight:600;font-size:12.5px;line-height:1.5;color:#F7F4EA">{{ b.edge }}</span><sc-if value="{{ b.isPremium }}"><span style="display:block;margin-top:8px;font-size:11.5px;line-height:1.5;color:#8A8674">{{ b.tier }}</span></sc-if></div></sc-if>
+<sc-for list="{{ b.desc }}" as="line" hint-placeholder-count="2"><p style="margin:0 0 8px">{{ line }}</p></sc-for>
+<sc-if value="{{ b.hasFact }}"><div style="margin-top:10px;padding-top:10px;border-top:2px solid #22251C"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#57A374;margin-bottom:6px">Know your bottle</span><span style="font-size:11.5px;line-height:1.5;color:#8A8674">{{ b.fact }}</span></div></sc-if>
+</div>
+<div style="flex:0 0 auto;padding-top:11px;border-top:2px solid #22251C"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#E5B84B;margin-bottom:6px">Serve it</span><span style="font-weight:600;font-size:13px;line-height:1.4;color:#F7F4EA">{{ b.serves }}</span></div>
+<sc-if value="{{ b.originOk }}"><div style="flex:0 0 auto;padding-top:11px;border-top:2px solid #22251C;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.5;color:#57A374"><span style="font-weight:600;letter-spacing:0.14em">ORIGIN</span><br>{{ b.origin }}</div></sc-if>
+<sc-if value="{{ b.originFlag }}"><div style="flex:0 0 auto;padding-top:11px;border-top:2px solid #22251C;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.5;color:#E0796A"><span style="font-weight:600;letter-spacing:0.14em">ORIGIN — UNCONFIRMED</span><br>{{ b.origin }}</div></sc-if>
+</div>
+</sc-if>
+</button>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+<sc-if value="{{ isEmpty }}"><p style="text-align:center;padding:80px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">No bottles match that search.</p></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CAT = { aperitivo:'#de8173', vermouth:'#d08b97', amari:'#d39e69', liqueurs:'#d095be', rum:'#c78660', tequila:'#bac680', mezcal:'#c8927e', vodka:'#9cb9c9', gin:'#78ba9b', scotch:'#dbbc76', irish:'#d5b090', american:'#d18661', japanese:'#aca5c0', brandy:'#c76d57' };
+class Component extends DCLogic {
+  state = { data: null, q: '', cat: 'all', flipped: {} };
+  componentDidMount() {
+    fetch('./data/bottles.json').then(r => r.json()).then(d => this.setState({ data: d })).catch(e => console.error('bottles.json', e));
+  }
+  renderVals() {
+    const d = this.state.data;
+    const onSearch = e => this.setState({ q: e.target.value });
+    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false };
+    const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
+    const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
+      const on = cat === (c.slug || 'all');
+      return {
+        label: (c.title || 'All').replace(' / ', ' & '), dot: CAT[c.slug] || '#E5B84B', on, off: !on,
+        pick: () => this.setState({ cat: c.slug || 'all' })
+      };
+    });
+    const sections = [];
+    d.categories.forEach(c => {
+      if (cat !== 'all' && cat !== c.slug) return;
+      const color = CAT[c.slug] || '#E5B84B';
+      const items = d.bottles.filter(b => b.slug === c.slug).filter(b => {
+        if (!q) return true;
+        return (b.name + ' ' + b.desc.join(' ') + ' ' + b.origin + ' ' + b.serves.join(' ') + ' ' + (b.fact || '') + ' ' + (b.edge || '') + ' ' + (b.tier || '')).toLowerCase().includes(q);
+      }).map(b => {
+        const key = b.name;
+        return {
+          name: b.name, catShort: c.title.split(' / ')[0], color,
+          desc: b.desc && b.desc.length ? b.desc : (b.fact ? [b.fact] : ['No tasting note on file.']),
+          hasFact: !!(b.fact && b.desc && b.desc.length), fact: b.fact || '',
+          hasEdge: !!b.edge, edge: b.edge || '', isPremium: !!b.tier, tier: b.tier || '',
+          serves: (b.serves || []).join('  ·  '), origin: b.origin,
+          originOk: !!b.confirmed, originFlag: !b.confirmed,
+          isFlask: b.vessel === 'flask', isWine: b.vessel === 'wine', isBottle: b.vessel === 'bottle',
+          showFront: !this.state.flipped[key], showBack: !!this.state.flipped[key],
+          flip: () => this.setState(s => ({ flipped: Object.assign({}, s.flipped, { [key]: !s.flipped[key] }) }))
+        };
+      });
+      if (items.length) sections.push({ slug: c.slug, title: c.title, color, tally: items.length, items });
+    });
+    return { q: this.state.q, onSearch, chips, sections, isEmpty: sections.length === 0 };
+  }
+}
+</script>
+</body>
+</html>

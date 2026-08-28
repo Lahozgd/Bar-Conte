@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="max-width:700px;margin:0 auto">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#57A374;margin:0 0 14px">Pick a shelf</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px">
+<sc-for list="{{ cats }}" as="c" hint-placeholder-count="8">
+<sc-if value="{{ c.on }}"><button onClick="{{ c.pick }}" style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:9px 14px;border:2px solid #E5B84B;background:#E5B84B;color:#000">{{ c.label }}</button></sc-if>
+<sc-if value="{{ c.off }}"><button onClick="{{ c.pick }}" style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:9px 14px;border:2px solid #22251C;background:#000;color:#8A8674" style-hover="border-color:#57A374;color:#F7F4EA">{{ c.label }}</button></sc-if>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;border-bottom:3px solid #E5B84B;padding-bottom:14px;margin-bottom:30px">
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#6E6A5A">Question <b style="color:#F7F4EA">{{ qNum }}</b>/10 &nbsp;·&nbsp; Correct <b style="color:#E5B84B">{{ score }}</b></span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#6E6A5A">{{ shelfLabel }}</span>
+</div>
+<sc-if value="{{ playing }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="border:2px solid #22251C;background:#0B0B0B;padding:32px 28px;margin-bottom:20px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#57A374;margin:0 0 18px">{{ kind }}</p>
+<sc-if value="{{ isServe }}"><p style="font-weight:800;font-size:clamp(22px,4vw,36px);line-height:1.1;letter-spacing:-0.03em;text-transform:uppercase;color:#E5B84B;margin:0;text-wrap:pretty">{{ clue }}</p></sc-if>
+<sc-if value="{{ notServe }}"><p style="font-weight:500;font-size:clamp(17px,2.6vw,22px);line-height:1.45;color:#F7F4EA;margin:0;text-wrap:pretty">{{ clue }}</p></sc-if>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px">
+<sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+<sc-if value="{{ o.isIdle }}"><button onClick="{{ o.pick }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:17px 18px;border:2px solid #22251C;background:#0B0B0B" style-hover="border-color:#57A374">
+<span style="font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#F7F4EA">{{ o.name }}</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">{{ o.cat }}</span>
+</button></sc-if>
+<sc-if value="{{ o.isRight }}"><button style="all:unset;display:flex;flex-direction:column;gap:6px;padding:17px 18px;border:2px solid #57A374;background:#0C1A11">
+<span style="font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#57A374">{{ o.name }}</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">{{ o.cat }}</span>
+</button></sc-if>
+<sc-if value="{{ o.isWrong }}"><button style="all:unset;display:flex;flex-direction:column;gap:6px;padding:17px 18px;border:2px solid #E0796A;background:#1A0C09">
+<span style="font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#E0796A">{{ o.name }}</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">{{ o.cat }}</span>
+</button></sc-if>
+<sc-if value="{{ o.isDim }}"><button style="all:unset;display:flex;flex-direction:column;gap:6px;padding:17px 18px;border:2px solid #22251C;background:#0B0B0B;opacity:0.4">
+<span style="font-weight:700;font-size:16px;letter-spacing:-0.01em;color:#F7F4EA">{{ o.name }}</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">{{ o.cat }}</span>
+</button></sc-if>
+</sc-for>
+</div>
+<sc-if value="{{ answered }}">
+<div style="margin-top:24px;border-top:2px solid #22251C;padding-top:20px">
+<sc-if value="{{ gotIt }}"><p style="font-weight:900;font-size:22px;letter-spacing:-0.02em;text-transform:uppercase;margin:0 0 12px;color:#57A374">{{ verdict }}</p></sc-if>
+<sc-if value="{{ missedIt }}"><p style="font-weight:900;font-size:22px;letter-spacing:-0.02em;text-transform:uppercase;margin:0 0 12px;color:#E0796A">{{ verdict }}</p></sc-if>
+<p style="font-size:13.5px;line-height:1.75;color:#8A8674;margin:0"><b style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#55524A;margin-right:9px">Origin</b>{{ exOrigin }}<br><b style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#55524A;margin-right:9px">Serve it</b>{{ exServes }}</p>
+<button onClick="{{ next }}" style="all:unset;cursor:pointer;display:inline-block;margin-top:22px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;padding:14px 24px;border:2px solid #E5B84B;background:#E5B84B;color:#000" style-hover="background:#F2D183;border-color:#F2D183">{{ nextLabel }}</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ finished }}">
+<div style="padding:20px 0">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:#55524A;margin:0 0 16px">Round complete</p>
+<p style="font-weight:900;font-size:clamp(64px,14vw,140px);line-height:0.82;letter-spacing:-0.05em;color:#E5B84B;margin:0 0 18px">{{ finalScore }}</p>
+<p style="font-weight:600;font-size:18px;color:#F7F4EA;margin:0 0 30px">{{ finalMsg }}</p>
+<button onClick="{{ restart }}" style="all:unset;cursor:pointer;display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;padding:14px 24px;border:2px solid #E5B84B;background:#E5B84B;color:#000" style-hover="background:#F2D183;border-color:#F2D183">Play again →</button>
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:#55524A;margin:22px 0 0">Best round: {{ best }}/10</p>
+</div>
+</sc-if>
+<sc-if value="{{ showMethod }}">
+<section style="margin-top:54px;border-top:3px solid #E5B84B;padding-top:26px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#57A374;margin:0 0 12px">Method · vermouth</p>
+<h3 style="font-weight:900;font-size:clamp(26px,4.4vw,40px);line-height:0.94;letter-spacing:-0.035em;text-transform:uppercase;margin:0 0 16px;color:#F7F4EA">The three-axis ladder</h3>
+<p style="font-size:14.5px;line-height:1.7;color:#8A8674;margin:0 0 30px;max-width:620px;text-wrap:pretty">Thirty-six vermouths will never be learned as thirty-six descriptions — they read too much alike. Locate every bottle on three axes instead, then give it one sentence nobody else can claim. Fifteen minutes before service, four steps.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2px;background:#22251C;border:2px solid #22251C;margin-bottom:30px">
+<div style="background:#0B0B0B;padding:20px">
+<span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E5B84B;margin-bottom:10px">Axis 1 · House</span>
+<p style="font-size:13.5px;line-height:1.6;color:#F7F4EA;margin:0">Martini, Cinzano, Carpano, Cocchi, Mancino, Oscar 697, del Professore, Bordiga, Starlino, Chazalettes, Naturale, Stellare. Twelve names, not thirty-six.</p>
+</div>
+<div style="background:#0B0B0B;padding:20px">
+<span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E5B84B;margin-bottom:10px">Axis 2 · Style</span>
+<p style="font-size:13.5px;line-height:1.6;color:#F7F4EA;margin:0">Rosso, Bianco, Ambrato, Dry/Secco, Chinato. Five slots. Every house fills two or three of them and no more.</p>
+</div>
+<div style="background:#0B0B0B;padding:20px">
+<span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E5B84B;margin-bottom:10px">Axis 3 · Register</span>
+<p style="font-size:13.5px;line-height:1.6;color:#F7F4EA;margin:0">Standard or reserve. Riserva Speciale, 1757, Antica Formula, Excelsior, Superiore, Barolo Chinato — the reserve word is on the label.</p>
+</div>
+</div>
+<div style="border:2px solid #22251C;background:#0B0B0B">
+<div style="display:flex;gap:18px;padding:20px;border-bottom:2px solid #22251C">
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;line-height:1;color:#E5B84B">01</span>
+<div><p style="font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:-0.01em;color:#F7F4EA;margin:0 0 6px">Draw the grid blind</p><p style="font-size:13.5px;line-height:1.65;color:#8A8674;margin:0">Houses down the side, the five styles across the top. Fill it from memory in three minutes, then walk the shelf and correct it. The holes in your grid are your study list.</p></div>
+</div>
+<div style="display:flex;gap:18px;padding:20px;border-bottom:2px solid #22251C">
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;line-height:1;color:#E5B84B">02</span>
+<div><p style="font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:-0.01em;color:#F7F4EA;margin:0 0 6px">Blind three of a kind</p><p style="font-size:13.5px;line-height:1.65;color:#8A8674;margin:0">Same style, three houses, 10 ml each, no labels — three rossos, or three dry. Don't name them; rank them. Sweetest to driest, lightest to heaviest. Ranking sticks where tasting notes don't.</p></div>
+</div>
+<div style="display:flex;gap:18px;padding:20px;border-bottom:2px solid #22251C">
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;line-height:1;color:#E5B84B">03</span>
+<div><p style="font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:-0.01em;color:#F7F4EA;margin:0 0 6px">One claim each</p><p style="font-size:13.5px;line-height:1.65;color:#8A8674;margin:0">Every bottle gets a single sentence no other bottle can say. The coffee one. The Barolo one. The Sicilian one. The 1786 one. If two bottles share a sentence, you don't know them apart yet — go find the label detail that splits them.</p></div>
+</div>
+<div style="display:flex;gap:18px;padding:20px">
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;line-height:1;color:#E5B84B">04</span>
+<div><p style="font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:-0.01em;color:#F7F4EA;margin:0 0 6px">The swap test</p><p style="font-size:13.5px;line-height:1.65;color:#8A8674;margin:0">A guest orders a Negroni. Name two rossos you could pour instead and say in one sentence what changes in the glass. This is the only part of the job the guest actually hears, so it is the part worth drilling last and hardest.</p></div>
+</div>
+</div>
+</section>
+</sc-if>
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.9;letter-spacing:0.06em;text-transform:uppercase;color:#3F3D34;margin:40px 0 0">{{ coverage }}</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { quiz: null, bottles: null, cat: 'all', q: null, chosen: null, idx: 0, correct: 0, done: false, best: 0 };
+  componentDidMount() {
+    try { this.setState({ best: parseInt(localStorage.getItem('cantina_best_round') || '0', 10) || 0 }); } catch (e) {}
+    Promise.all([fetch('./data/quiz.json').then(r => r.json()), fetch('./data/bottles.json').then(r => r.json())])
+      .then(([quiz, data]) => this.setState({ quiz, bottles: data }, () => this.start()))
+      .catch(e => console.error('quiz data', e));
+  }
+  groups() {
+    return [
+      { key: 'all', label: 'All shelves', cats: null },
+      { key: 'vermouth', label: 'Vermouth', cats: ['VERMOUTH'] },
+      { key: 'digestivi', label: 'Digestivi & Amari', cats: ['DIGESTIVI / AMARI', 'LIQUEURS'] },
+      { key: 'spirits', label: 'Gin · Vodka · Whisky', cats: ['GIN', 'VODKA', 'SCOTCH WHISKY', 'IRISH WHISKEY', 'AMERICAN WHISKEY', 'JAPANESE WHISKY'] },
+      { key: 'aperitivo', label: 'Aperitivo & Bitter', cats: ['APERITIVO / BITTER'] },
+      { key: 'agave', label: 'Agave, Rum & Brandy', cats: ['RUM', 'TEQUILA', 'MEZCAL', 'BRANDY'] }
+    ];
+  }
+  pool() {
+    const g = this.groups().find(x => x.key === this.state.cat) || this.groups()[0];
+    return g.cats ? this.state.quiz.filter(q => g.cats.indexOf(q.cat) > -1) : this.state.quiz;
+  }
+  pick() { const p = this.pool(); return p[Math.floor(Math.random() * p.length)]; }
+  start() { this.setState({ idx: 0, correct: 0, done: false, chosen: null, q: this.pick() }); }
+  next() {
+    if (this.state.idx >= 9) { this.finish(); return; }
+    this.setState(s => ({ idx: s.idx + 1, chosen: null, q: this.pick() }));
+  }
+  finish() {
+    const best = Math.max(this.state.best, this.state.correct);
+    try { localStorage.setItem('cantina_best_round', String(best)); } catch (e) {}
+    this.setState({ done: true, best });
+  }
+  kindLabel(t) {
+    if (t === 'serve') return 'How it is served — which bottle?';
+    if (t === 'origin') return 'Where is it from — which bottle?';
+    if (t === 'fact') return 'Know your bottle — which bottle?';
+    if (t === 'edge') return 'The differentiator — which bottle?';
+    return 'Tasting note — which bottle?';
+  }
+  msg(n) {
+    if (n === 10) return 'Perfect — you know your bottles.';
+    if (n >= 8) return 'Great work — almost flawless.';
+    if (n >= 6) return 'Solid — a few gaps to review.';
+    if (n >= 4) return 'Getting there — worth another round.';
+    return 'Time to hit the shelves again.';
+  }
+  renderVals() {
+    const s = this.state;
+    const onCat = e => this.setState({ cat: e.target.value }, () => this.start());
+    if (!s.quiz || !s.q) return { playing: false, finished: false, cats: [], options: [], qNum: 1, score: 0, coverage: '', cat: 'all', onCat, showMethod: false, shelfLabel: '' };
+    const pickCat = k => this.setState({ cat: k }, () => this.start());
+    const cats = this.groups().map(g => {
+      const n = g.cats ? s.quiz.filter(q => g.cats.indexOf(q.cat) > -1).length : s.quiz.length;
+      return { label: g.label + ' · ' + n, on: s.cat === g.key, off: s.cat !== g.key, pick: () => pickCat(g.key) };
+    });
+    const gnow = this.groups().find(x => x.key === s.cat) || this.groups()[0];
+    const q = s.q, answered = s.chosen !== null;
+    const options = q.options.map(o => {
+      const isRight = o.name === q.correct, isMine = o.name === s.chosen;
+      return {
+        name: o.name, cat: o.cat,
+        isIdle: !answered, isRight: answered && isRight,
+        isWrong: answered && !isRight && isMine, isDim: answered && !isRight && !isMine,
+        pick: () => { if (!answered) this.setState({ chosen: o.name, correct: s.correct + (isRight ? 1 : 0) }); }
+      };
+    });
+    const b = s.bottles.bottles.find(x => x.name === q.correct);
+    const right = s.chosen === q.correct;
+    return {
+      playing: !s.done, finished: s.done, cats, cat: s.cat, onCat,
+      showMethod: s.cat === 'vermouth',
+      shelfLabel: gnow.label,
+      qNum: Math.min(s.idx + 1, 10), score: s.correct,
+      kind: this.kindLabel(q.qType),
+      clue: Array.isArray(q.clue) ? q.clue.join('  ') : q.clue,
+      isServe: q.qType === 'serve', notServe: q.qType !== 'serve',
+      options, answered,
+      verdict: right ? 'Correct — ' + q.correct : 'Not quite — it was ' + q.correct,
+      gotIt: right, missedIt: !right,
+      exOrigin: b ? (b.confirmed ? b.origin : 'origin unconfirmed') : '',
+      exServes: b ? b.serves.join('  ·  ') : '',
+      nextLabel: s.idx >= 9 ? 'See results →' : 'Next bottle →',
+      next: () => this.next(),
+      finalScore: s.correct + '/10', finalMsg: this.msg(s.correct), best: s.best,
+      restart: () => this.start(),
+      coverage: new Set(s.quiz.map(x => x.correct)).size + ' of ' + s.bottles.totalCount + ' bottles have a fair, unambiguous question — ' + s.quiz.length + ' questions in the pool. The rest read too much like a sibling bottle to quiz apart.'
+    };
+  }
+}
+</script>
+</body>
+</html>

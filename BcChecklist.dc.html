@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="background:#F7F4EA;color:#0B0B0B;padding:34px 30px 44px;border:2px solid #E5B84B">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+<sc-if value="{{ t.on }}"><button onClick="{{ t.pick }}" style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;padding:11px 18px;border:2px solid #0B0B0B;background:#0B0B0B;color:#F7F4EA">{{ t.label }}</button></sc-if>
+<sc-if value="{{ t.off }}"><button onClick="{{ t.pick }}" style="cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;padding:11px 18px;border:2px solid #CFC9B6;background:#F7F4EA;color:#6C6555" style-hover="border-color:#0B0B0B;color:#0B0B0B">{{ t.label }}</button></sc-if>
+</sc-for>
+</div>
+<h2 style="font-weight:900;font-size:clamp(26px,4.6vw,44px);line-height:0.94;letter-spacing:-0.035em;text-transform:uppercase;margin:0 0 22px;border-bottom:3px solid #0B0B0B;padding-bottom:16px">{{ title }}</h2>
+<sc-if value="{{ hasSourceNote }}"><p style="max-width:680px;font-size:12.5px;line-height:1.7;color:#6C6555;border-left:3px solid #E5B84B;padding:2px 0 2px 14px;margin:0 0 26px">{{ sourceNote }}</p></sc-if>
+<sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="display:flex;align-items:center;gap:16px;max-width:680px;margin-bottom:30px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#6C6555">
+<span>{{ progressLabel }}</span>
+<svg viewBox="0 0 100 3" preserveAspectRatio="none" style="flex:1 1 auto;height:3px;display:block"><rect x="0" y="0" width="100" height="3" fill="#DAD4C0"></rect><rect x="0" y="0" width="{{ progressNum }}" height="3" fill="#0B0B0B"></rect></svg>
+<button onClick="{{ reset }}" style="all:unset;cursor:pointer;text-transform:uppercase;color:#6C6555;white-space:nowrap;border-bottom:1px solid #CFC9B6" style-hover="color:#0B0B0B">Reset</button>
+</div>
+<sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+<div style="max-width:680px;margin-bottom:34px">
+<h3 style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#1F5E38;margin:0 0 14px;padding-bottom:10px;border-bottom:2px solid #0B0B0B">{{ g.title }}</h3>
+<sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+<div>
+<sc-if value="{{ r.isLabel }}"><p style="font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:-0.01em;color:#0B0B0B;margin:16px 0 4px">{{ r.text }}</p></sc-if>
+<sc-if value="{{ r.itemTodo }}">
+<label style="display:flex;align-items:flex-start;gap:13px;padding:9px 0;padding-left:0;cursor:pointer;border-bottom:1px solid #E4DECB">
+<input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}" style="flex:0 0 auto;width:17px;height:17px;margin-top:2px;accent-color:#0B0B0B;cursor:pointer">
+<span style="font-size:14px;line-height:1.5;color:#0B0B0B;text-decoration:none">{{ r.text }}</span>
+</label>
+</sc-if>
+<sc-if value="{{ r.itemDone }}">
+<label style="display:flex;align-items:flex-start;gap:13px;padding:9px 0;padding-left:0;cursor:pointer;border-bottom:1px solid #E4DECB">
+<input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}" style="flex:0 0 auto;width:17px;height:17px;margin-top:2px;accent-color:#0B0B0B;cursor:pointer">
+<span style="font-size:14px;line-height:1.5;color:#A9A292;text-decoration:line-through">{{ r.text }}</span>
+</label>
+</sc-if>
+<sc-if value="{{ r.subTodo }}">
+<label style="display:flex;align-items:flex-start;gap:13px;padding:7px 0;padding-left:28px;cursor:pointer;border-bottom:1px solid #EDE8D8">
+<input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}" style="flex:0 0 auto;width:17px;height:17px;margin-top:2px;accent-color:#0B0B0B;cursor:pointer">
+<span style="font-size:14px;line-height:1.5;color:#0B0B0B;text-decoration:none">{{ r.text }}</span>
+</label>
+</sc-if>
+<sc-if value="{{ r.subDone }}">
+<label style="display:flex;align-items:flex-start;gap:13px;padding:7px 0;padding-left:28px;cursor:pointer;border-bottom:1px solid #EDE8D8">
+<input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.toggle }}" style="flex:0 0 auto;width:17px;height:17px;margin-top:2px;accent-color:#0B0B0B;cursor:pointer">
+<span style="font-size:14px;line-height:1.5;color:#A9A292;text-decoration:line-through">{{ r.text }}</span>
+</label>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ isRef }}">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px;background:#0B0B0B;border:2px solid #0B0B0B;max-width:980px">
+<sc-for list="{{ cards }}" as="c" hint-placeholder-count="3">
+<div style="background:#F7F4EA;padding:22px 24px">
+<h3 style="font-weight:900;font-size:20px;letter-spacing:-0.02em;text-transform:uppercase;margin:0 0 16px;color:#0B0B0B">{{ c.heading }}</h3>
+<sc-for list="{{ c.items }}" as="i" hint-placeholder-count="2">
+<p style="font-size:13.5px;line-height:1.6;color:#3C382E;margin:0 0 14px;padding-left:14px;border-left:2px solid #E5B84B">{{ i }}</p>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = id => 'cantina_checklist_' + id;
+class Component extends DCLogic {
+  state = { data: null, tab: 'opening', ticks: {} };
+  componentDidMount() {
+    this.freshDay();
+    fetch('./data/checklist.json').then(r => r.json()).then(d => this.setState({ data: d })).catch(e => console.error('checklist.json', e));
+  }
+  freshDay() {
+    try {
+      const d = new Date(), today = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      if (localStorage.getItem('cantina_checklist_day') !== today) {
+        const kill = [];
+        for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('cantina_checklist_') === 0 && k !== 'cantina_checklist_day') kill.push(k); }
+        kill.forEach(k => localStorage.removeItem(k));
+        localStorage.setItem('cantina_checklist_day', today);
+      }
+    } catch (e) {}
+  }
+  isOn(id) { if (id in this.state.ticks) return this.state.ticks[id]; try { return localStorage.getItem(KEY(id)) === '1'; } catch (e) { return false; } }
+  set(id, v) { try { localStorage.setItem(KEY(id), v ? '1' : '0'); } catch (e) {} this.setState(s => ({ ticks: Object.assign({}, s.ticks, { [id]: v }) })); }
+  row(e, sub) {
+    const on = this.isOn(e.id);
+    return {
+      isLabel: false, text: e.text, checked: on,
+      itemTodo: !sub && !on, itemDone: !sub && on, subTodo: sub && !on, subDone: sub && on,
+      toggle: ev => this.set(e.id, ev.target.checked)
+    };
+  }
+  renderVals() {
+    const d = this.state.data;
+    if (!d) return { tabs: [], groups: [], cards: [], isList: false, isRef: false, title: '' };
+    const tabs = ['opening', 'service', 'closing'].map(k => {
+      const on = this.state.tab === k;
+      return { label: d[k].label, on, off: !on, pick: () => this.setState({ tab: k }) };
+    });
+    const sec = d[this.state.tab];
+    const base = { tabs, title: sec.title, hasSourceNote: !!sec.sourceNote, sourceNote: sec.sourceNote || '', isList: false, isRef: false, groups: [], cards: [] };
+    if (sec.type === 'reference') return Object.assign(base, { isRef: true, cards: sec.cards });
+    const ids = [];
+    const groups = sec.groups.map(g => ({
+      title: g.title,
+      rows: g.entries.reduce((acc, e) => {
+        if (e.checkable) { ids.push(e.id); acc.push(this.row(e, false)); }
+        else { acc.push({ isLabel: true, text: e.text }); e.sub.forEach(s => { ids.push(s.id); acc.push(this.row(s, true)); }); }
+        return acc;
+      }, [])
+    }));
+    const done = ids.filter(id => this.isOn(id)).length;
+    return Object.assign(base, {
+      isList: true, groups,
+      progressLabel: done + '/' + ids.length + ' done',
+      progressNum: ids.length ? Math.round(done / ids.length * 100) : 0,
+      reset: () => ids.forEach(id => this.set(id, false))
+    });
+  }
+}
+</script>
+</body>
+</html>

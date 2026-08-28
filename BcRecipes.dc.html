@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
+<input type="search" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a recipe or an ingredient…" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ chips }}" as="chip" hint-placeholder-count="7">
+<sc-if value="{{ chip.on }}"><button onClick="{{ chip.pick }}" style="flex:0 0 auto;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:10px 17px;border:2px solid #E5B84B;background:#E5B84B;color:#000">{{ chip.label }}</button></sc-if>
+<sc-if value="{{ chip.off }}"><button onClick="{{ chip.pick }}" style="flex:0 0 auto;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:10px 17px;border:2px solid #22251C;background:#000;color:#8A8674" style-hover="border-color:#3A3E2E;color:#F7F4EA">{{ chip.label }}</button></sc-if>
+</sc-for>
+</div>
+</div>
+<sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+<section style="margin-bottom:52px">
+<div style="display:flex;align-items:baseline;gap:16px;border-bottom:3px solid #E5B84B;padding-bottom:12px;margin-bottom:20px">
+<h2 style="font-weight:900;font-size:clamp(20px,3vw,32px);line-height:1;letter-spacing:-0.03em;text-transform:uppercase;margin:0;color:#F7F4EA;flex:1">{{ sec.section }}</h2>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#6E6A5A">{{ sec.tally }}</span>
+</div>
+<sc-if value="{{ sec.hasNote }}"><p style="font-size:13px;line-height:1.7;color:#8A8674;max-width:680px;margin:0 0 20px">{{ sec.note }}</p></sc-if>
+<div style="display:flex;flex-direction:column;gap:2px">
+<sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="5">
+<div style="border:2px solid #22251C;background:#0B0B0B">
+<button onClick="{{ it.toggle }}" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:16px;padding:16px 18px" style-hover="background:#121212">
+<span style="flex:1 1 auto;font-weight:800;font-size:18px;letter-spacing:-0.02em;text-transform:uppercase;color:#F7F4EA">{{ it.name }}</span>
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">{{ it.glassLabel }}</span>
+<sc-if value="{{ it.open }}"><span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#E5B84B">—</span></sc-if>
+<sc-if value="{{ it.closed }}"><span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#55524A">+</span></sc-if>
+</button>
+<sc-if value="{{ it.open }}">
+<div style="padding:0 18px 22px">
+<sc-if value="{{ it.hasPairing }}"><p style="font-size:13.5px;line-height:1.6;color:#8A8674;margin:0 0 18px">{{ it.pairing }}</p></sc-if>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;background:#22251C;border:2px solid #22251C">
+<sc-if value="{{ it.hasSingle }}">
+<div style="background:#000;padding:18px 20px"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E5B84B;margin-bottom:12px">Single serve</span>
+<sc-for list="{{ it.single }}" as="l" hint-placeholder-count="3"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.9;color:#F7F4EA">{{ l }}</div></sc-for>
+<sc-if value="{{ it.hasSingleNote }}"><p style="font-size:11.5px;line-height:1.6;color:#55524A;margin:8px 0 0">{{ it.singleNote }}</p></sc-if></div>
+</sc-if>
+<sc-if value="{{ it.hasBatch }}">
+<div style="background:#000;padding:18px 20px"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#57A374;margin-bottom:12px">Pre batch</span>
+<sc-for list="{{ it.preBatch }}" as="l" hint-placeholder-count="3"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.9;color:#F7F4EA">{{ l }}</div></sc-for>
+<sc-if value="{{ it.hasBatchNote }}"><p style="font-size:11.5px;line-height:1.6;color:#55524A;margin:8px 0 0">{{ it.preBatchNote }}</p></sc-if></div>
+</sc-if>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px 30px;margin-top:16px">
+<sc-for list="{{ it.meta }}" as="m" hint-placeholder-count="4">
+<span style="font-size:13px;color:#F7F4EA"><b style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#55524A;margin-right:9px">{{ m.label }}</b>{{ m.value }}</span>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+<sc-if value="{{ isEmpty }}"><p style="text-align:center;padding:80px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">No recipes match that search.</p></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { data: null, q: '', sec: 'all', open: {} };
+  componentDidMount() { fetch('./data/recipes.json').then(r => r.json()).then(d => this.setState({ data: d })).catch(e => console.error('recipes.json', e)); }
+  renderVals() {
+    const onSearch = e => this.setState({ q: e.target.value });
+    const d = this.state.data;
+    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false };
+    const q = this.state.q.trim().toLowerCase(), active = this.state.sec;
+    const chips = [{ slug: 'all', section: 'All' }].concat(d).map(s => {
+      const on = active === (s.slug || 'all');
+      return { label: s.section, on, off: !on, pick: () => this.setState({ sec: s.slug || 'all' }) };
+    });
+    const sections = [];
+    d.forEach(sec => {
+      if (active !== 'all' && active !== sec.slug) return;
+      const items = sec.items.filter(it => {
+        if (!q) return true;
+        return (it.name + ' ' + (it.single || []).join(' ') + ' ' + (it.preBatch || []).join(' ') + ' ' + (it.garnish || '') + ' ' + (it.method || '')).toLowerCase().includes(q);
+      }).map(it => {
+        const key = sec.slug + '::' + it.name;
+        const open = !!this.state.open[key];
+        const glass = it.glass || it.glassGuess || '';
+        const meta = [];
+        if (it.glass) meta.push({ label: 'Glass', value: it.glass });
+        else if (it.glassGuess) meta.push({ label: 'Glass', value: it.glassGuess + ' (usual glass, not printed on the sheet)' });
+        if (it.ice) meta.push({ label: 'Ice', value: it.ice });
+        if (it.method) meta.push({ label: 'Method', value: it.method });
+        if (it.garnish) meta.push({ label: 'Garnish', value: it.garnish });
+        return {
+          name: it.name, glassLabel: glass, open, closed: !open,
+          hasPairing: !!it.pairing, pairing: it.pairing || '',
+          hasSingle: !!(it.single || it.singleNote), single: it.single || [], hasSingleNote: !!it.singleNote, singleNote: it.singleNote || '',
+          hasBatch: !!it.preBatch, preBatch: it.preBatch || [], hasBatchNote: !!it.preBatchNote, preBatchNote: it.preBatchNote || '',
+          meta,
+          toggle: () => this.setState(s => ({ open: Object.assign({}, s.open, { [key]: !s.open[key] }) }))
+        };
+      });
+      if (items.length || (!sec.items.length && !q)) sections.push({ section: sec.section, tally: items.length, hasNote: !!sec.note, note: sec.note || '', items });
+    });
+    return { q: this.state.q, onSearch, chips, sections, isEmpty: sections.length === 0 };
+  }
+}
+</script>
+</body>
+</html>
