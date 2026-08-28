@@ -7,6 +7,11 @@
 </head>
 <body>
 <x-dc>
+<sc-if value="{{ hasErr }}"><div style="border:2px solid #E0796A;background:#1A0C09;padding:18px 20px;margin-bottom:26px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E0796A;margin:0 0 10px">Data not loaded</p>
+<p style="font-size:14px;line-height:1.6;color:#F7F4EA;margin:0 0 8px">The bottle, recipe and checklist files could not be read. If you opened the file straight from the phone's storage, open the published web address instead — the data only loads over a real web server.</p>
+<p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
+</div></sc-if>
 <div style="max-width:700px;margin:0 auto">
 <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:#57A374;margin:0 0 14px">Pick a shelf</p>
 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px">
@@ -109,12 +114,13 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { quiz: null, bottles: null, cat: 'all', q: null, chosen: null, idx: 0, correct: 0, done: false, best: 0 };
+  state = { quiz: null, bottles: null, cat: 'all', q: null, chosen: null, idx: 0, correct: 0, done: false, best: 0, err: '' };
   componentDidMount() {
     try { this.setState({ best: parseInt(localStorage.getItem('cantina_best_round') || '0', 10) || 0 }); } catch (e) {}
-    Promise.all([fetch('./data/quiz.json').then(r => r.json()), fetch('./data/bottles.json').then(r => r.json())])
+    if (window.BC_DATA && window.BC_DATA.quiz && window.BC_DATA.bottles) { this.setState({ quiz: window.BC_DATA.quiz, bottles: window.BC_DATA.bottles }, () => this.start()); return; }
+    Promise.all([fetch(new URL('data/quiz.json', document.baseURI).href).then(r => r.json()), fetch(new URL('data/bottles.json', document.baseURI).href).then(r => r.json())])
       .then(([quiz, data]) => this.setState({ quiz, bottles: data }, () => this.start()))
-      .catch(e => console.error('quiz data', e));
+      .catch(e => { console.error('quiz data', e); this.setState({ err: String(e && e.message || e) }); });
   }
   groups() {
     return [
@@ -158,7 +164,7 @@ class Component extends DCLogic {
   renderVals() {
     const s = this.state;
     const onCat = e => this.setState({ cat: e.target.value }, () => this.start());
-    if (!s.quiz || !s.q) return { playing: false, finished: false, cats: [], options: [], qNum: 1, score: 0, coverage: '', cat: 'all', onCat, showMethod: false, shelfLabel: '' };
+    if (!s.quiz || !s.q) return { playing: false, finished: false, cats: [], options: [], qNum: 1, score: 0, coverage: '', cat: 'all', onCat, showMethod: false, shelfLabel: '', hasErr: !!s.err, errMsg: s.err || '' };
     const pickCat = k => this.setState({ cat: k }, () => this.start());
     const cats = this.groups().map(g => {
       const n = g.cats ? s.quiz.filter(q => g.cats.indexOf(q.cat) > -1).length : s.quiz.length;

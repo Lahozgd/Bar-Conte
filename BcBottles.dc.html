@@ -76,6 +76,7 @@ const CAT = { aperitivo:'#de8173', vermouth:'#d08b97', amari:'#d39e69', liqueurs
 class Component extends DCLogic {
   state = { data: null, q: '', cat: 'all', flipped: {}, err: '' };
   componentDidMount() {
+    if (window.BC_DATA && window.BC_DATA.bottles) { this.setState({ data: window.BC_DATA.bottles }); return; }
     fetch(new URL('data/bottles.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/bottles.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('bottles.json', e); this.setState({ err: String(e && e.message || e) }); });
   }
   renderVals() {
