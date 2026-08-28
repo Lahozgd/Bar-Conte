@@ -7,6 +7,11 @@
 </head>
 <body>
 <x-dc>
+<sc-if value="{{ hasErr }}"><div style="border:2px solid #E0796A;background:#1A0C09;padding:18px 20px;margin-bottom:26px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E0796A;margin:0 0 10px">Data not loaded</p>
+<p style="font-size:14px;line-height:1.6;color:#F7F4EA;margin:0 0 8px">The bottle, recipe and checklist files could not be read. If you opened the file straight from the phone's storage, open the published web address instead — the data only loads over a real web server.</p>
+<p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
+</div></sc-if>
 <helmet><style>@keyframes bcTurn{from{opacity:0;transform:rotateY(-40deg) scale(0.985)}to{opacity:1;transform:none}}</style></helmet>
 <section style="max-width:720px;margin:0 0 46px">
 <p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:#57A374;margin:0 0 18px">The Story</p>
@@ -69,14 +74,14 @@
 <script type="text/x-dc" data-dc-script>
 const CAT = { aperitivo:'#de8173', vermouth:'#d08b97', amari:'#d39e69', liqueurs:'#d095be', rum:'#c78660', tequila:'#bac680', mezcal:'#c8927e', vodka:'#9cb9c9', gin:'#78ba9b', scotch:'#dbbc76', irish:'#d5b090', american:'#d18661', japanese:'#aca5c0', brandy:'#c76d57' };
 class Component extends DCLogic {
-  state = { data: null, q: '', cat: 'all', flipped: {} };
+  state = { data: null, q: '', cat: 'all', flipped: {}, err: '' };
   componentDidMount() {
-    fetch('./data/bottles.json').then(r => r.json()).then(d => this.setState({ data: d })).catch(e => console.error('bottles.json', e));
+    fetch(new URL('data/bottles.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/bottles.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('bottles.json', e); this.setState({ err: String(e && e.message || e) }); });
   }
   renderVals() {
     const d = this.state.data;
     const onSearch = e => this.setState({ q: e.target.value });
-    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false };
+    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '' };
     const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
     const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
       const on = cat === (c.slug || 'all');

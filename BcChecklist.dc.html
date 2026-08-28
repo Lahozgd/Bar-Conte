@@ -7,6 +7,11 @@
 </head>
 <body>
 <x-dc>
+<sc-if value="{{ hasErr }}"><div style="border:2px solid #E0796A;background:#1A0C09;padding:18px 20px;margin-bottom:26px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E0796A;margin:0 0 10px">Data not loaded</p>
+<p style="font-size:14px;line-height:1.6;color:#F7F4EA;margin:0 0 8px">The bottle, recipe and checklist files could not be read. If you opened the file straight from the phone's storage, open the published web address instead — the data only loads over a real web server.</p>
+<p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
+</div></sc-if>
 <div style="background:#F7F4EA;color:#0B0B0B;padding:34px 30px 44px;border:2px solid #E5B84B">
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px">
 <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
@@ -76,10 +81,10 @@
 <script type="text/x-dc" data-dc-script>
 const KEY = id => 'cantina_checklist_' + id;
 class Component extends DCLogic {
-  state = { data: null, tab: 'opening', ticks: {} };
+  state = { data: null, tab: 'opening', ticks: {}, err: '' };
   componentDidMount() {
     this.freshDay();
-    fetch('./data/checklist.json').then(r => r.json()).then(d => this.setState({ data: d })).catch(e => console.error('checklist.json', e));
+    fetch(new URL('data/checklist.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/checklist.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('checklist.json', e); this.setState({ err: String(e && e.message || e) }); });
   }
   freshDay() {
     try {
@@ -104,7 +109,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     const d = this.state.data;
-    if (!d) return { tabs: [], groups: [], cards: [], isList: false, isRef: false, title: '' };
+    if (!d) return { tabs: [], groups: [], cards: [], isList: false, isRef: false, title: '', hasErr: !!this.state.err, errMsg: this.state.err || '' };
     const tabs = ['opening', 'service', 'closing'].map(k => {
       const on = this.state.tab === k;
       return { label: d[k].label, on, off: !on, pick: () => this.setState({ tab: k }) };

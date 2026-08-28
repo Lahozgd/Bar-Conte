@@ -7,6 +7,11 @@
 </head>
 <body>
 <x-dc>
+<sc-if value="{{ hasErr }}"><div style="border:2px solid #E0796A;background:#1A0C09;padding:18px 20px;margin-bottom:26px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E0796A;margin:0 0 10px">Data not loaded</p>
+<p style="font-size:14px;line-height:1.6;color:#F7F4EA;margin:0 0 8px">The bottle, recipe and checklist files could not be read. If you opened the file straight from the phone's storage, open the published web address instead — the data only loads over a real web server.</p>
+<p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
+</div></sc-if>
 <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
 <input type="search" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a recipe or an ingredient…" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
 <div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -63,12 +68,12 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { data: null, q: '', sec: 'all', open: {} };
-  componentDidMount() { fetch('./data/recipes.json').then(r => r.json()).then(d => this.setState({ data: d })).catch(e => console.error('recipes.json', e)); }
+  state = { data: null, q: '', sec: 'all', open: {}, err: '' };
+  componentDidMount() { fetch(new URL('data/recipes.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/recipes.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('recipes.json', e); this.setState({ err: String(e && e.message || e) }); }); }
   renderVals() {
     const onSearch = e => this.setState({ q: e.target.value });
     const d = this.state.data;
-    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false };
+    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '' };
     const q = this.state.q.trim().toLowerCase(), active = this.state.sec;
     const chips = [{ slug: 'all', section: 'All' }].concat(d).map(s => {
       const on = active === (s.slug || 'all');
