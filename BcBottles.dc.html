@@ -14,7 +14,10 @@
 </div></sc-if>
 <helmet><style>@keyframes bcTurn{from{opacity:0;transform:rotateY(-40deg) scale(0.985)}to{opacity:1;transform:none}}</style></helmet>
 <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
-<input type="search" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a bottle or a flavour note…" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<div style="position:relative;display:block">
+<input type="text" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a bottle" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 52px 15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<sc-if value="{{ hasQ }}"><button onClick="{{ clearQ }}" aria-label="Clear search" style="all:unset;position:absolute;top:0;right:0;height:100%;width:52px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#8A8674" style-hover="color:#E5B84B">✕</button></sc-if>
+</div>
 <button onClick="{{ toggleFilters }}" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #22251C;background:#0B0B0B" style-hover="border-color:#3A3E2E">
 <span style="flex:1 1 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#E5B84B">Filters</span>
 <span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8A8674">{{ catLabel }}</span>
@@ -84,8 +87,10 @@ class Component extends DCLogic {
   renderVals() {
     const d = this.state.data;
     const onSearch = e => this.setState({ q: e.target.value });
+    const clearQ = () => this.setState({ q: '' });
+    const hasQ = this.state.q.length > 0;
     const toggleFilters = () => this.setState(s => ({ filtersOpen: !s.filtersOpen }));
-    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All' };
+    if (!d) return { q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All' };
     const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
     const nameHit = q ? d.bottles.some(b => b.name.toLowerCase().indexOf(q) > -1) : false;
     const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
@@ -121,7 +126,7 @@ class Component extends DCLogic {
     });
     const activeCat = d.categories.filter(c => c.slug === cat)[0];
     return {
-      q: this.state.q, onSearch, chips, sections, isEmpty: sections.length === 0,
+      q: this.state.q, onSearch, clearQ, hasQ, chips, sections, isEmpty: sections.length === 0,
       toggleFilters, filtersOpen: this.state.filtersOpen, filtersShut: !this.state.filtersOpen,
       catLabel: activeCat ? activeCat.title.replace(' / ', ' & ') : 'All categories'
     };

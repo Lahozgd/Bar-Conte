@@ -13,7 +13,10 @@
 <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
 </div></sc-if>
 <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
-<input type="search" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a recipe or an ingredient…" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<div style="position:relative;display:block">
+<input type="text" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a recipe" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 52px 15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
+<sc-if value="{{ hasQ }}"><button onClick="{{ clearQ }}" aria-label="Clear search" style="all:unset;position:absolute;top:0;right:0;height:100%;width:52px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#8A8674" style-hover="color:#E5B84B">✕</button></sc-if>
+</div>
 <button onClick="{{ toggleFilters }}" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #22251C;background:#0B0B0B" style-hover="border-color:#3A3E2E">
 <span style="flex:1 1 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#E5B84B">Filters</span>
 <span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:#8A8674">{{ catLabel }}</span>
@@ -35,7 +38,8 @@
 <h2 style="font-weight:900;font-size:clamp(20px,3vw,32px);line-height:1;letter-spacing:-0.03em;text-transform:uppercase;margin:0;color:#F7F4EA;flex:1">{{ sec.section }}</h2>
 <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#6E6A5A">{{ sec.tally }}</span>
 </div>
-<sc-if value="{{ sec.hasNote }}"><p style="font-size:13px;line-height:1.7;color:#8A8674;max-width:680px;margin:0 0 20px">{{ sec.note }}</p></sc-if>
+<sc-if value="{{ sec.hasNote }}"><p style="font-size:13px;line-height:1.7;color:#8A8674;max-width:680px;margin:0 0 12px">{{ sec.note }}</p></sc-if>
+<sc-if value="{{ sec.hasNoteList }}"><div style="display:flex;flex-direction:column;gap:5px;max-width:680px;margin:0 0 20px"><sc-for list="{{ sec.noteList }}" as="n" hint-placeholder-count="3"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.6;color:#8A8674">{{ n }}</span></sc-for></div></sc-if>
 <div style="display:flex;flex-direction:column;gap:2px">
 <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="5">
 <div style="border:2px solid #22251C;background:#0B0B0B">
@@ -80,9 +84,11 @@ class Component extends DCLogic {
   componentDidMount() { if (window.BC_DATA && window.BC_DATA.recipes) { this.setState({ data: window.BC_DATA.recipes }); return; } fetch(new URL('data/recipes.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/recipes.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('recipes.json', e); this.setState({ err: String(e && e.message || e) }); }); }
   renderVals() {
     const onSearch = e => this.setState({ q: e.target.value });
+    const clearQ = () => this.setState({ q: '' });
+    const hasQ = this.state.q.length > 0;
     const d = this.state.data;
     const toggleFilters = () => this.setState(s => ({ filtersOpen: !s.filtersOpen }));
-    if (!d) return { q: this.state.q, onSearch, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All' };
+    if (!d) return { q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All' };
     const q = this.state.q.trim().toLowerCase(), active = this.state.sec;
     const chips = [{ slug: 'all', section: 'All' }].concat(d).map(s => {
       const on = active === (s.slug || 'all');
@@ -113,11 +119,11 @@ class Component extends DCLogic {
           toggle: () => this.setState(s => ({ open: Object.assign({}, s.open, { [key]: !s.open[key] }) }))
         };
       });
-      if (items.length || (!sec.items.length && !q)) sections.push({ section: sec.section, tally: items.length, hasNote: !!sec.note, note: sec.note || '', items });
+      if (items.length || (!sec.items.length && !q)) sections.push({ section: sec.section, tally: items.length, hasNote: !!sec.note, note: sec.note || '', hasNoteList: !!(sec.noteList && sec.noteList.length), noteList: sec.noteList || [], items });
     });
     const activeSec = d.filter(s => s.slug === active)[0];
     return {
-      q: this.state.q, onSearch, chips, sections, isEmpty: sections.length === 0,
+      q: this.state.q, onSearch, clearQ, hasQ, chips, sections, isEmpty: sections.length === 0,
       toggleFilters, filtersOpen: this.state.filtersOpen, filtersShut: !this.state.filtersOpen,
       catLabel: activeSec ? activeSec.section : 'All recipes'
     };
