@@ -53,6 +53,7 @@
 <div hidden="{{ hideRecipes }}"><dc-import name="BcRecipes" hint-size="100%,600px"></dc-import></div>
 <div hidden="{{ hideChecklist }}"><dc-import name="BcChecklist" hint-size="100%,600px"></dc-import></div>
 <div hidden="{{ hideTraining }}"><dc-import name="BcTraining" hint-size="100%,520px"></dc-import></div>
+<div hidden="{{ hideOrders }}"><dc-import name="BcOrders" hint-size="100%,600px"></dc-import></div>
 </main>
 </div>
 </x-dc>
@@ -61,14 +62,14 @@ class Component extends DCLogic {
   state = { view: 'home' };
   renderVals() {
     const v = this.state.view;
-    const tabs = [['cards', 'Bottles'], ['recipes', 'Recipes'], ['checklist', 'Checklist'], ['training', 'Training']].map(([k, label]) => ({
+    const tabs = [['cards', 'Bottles'], ['recipes', 'Recipes'], ['checklist', 'Checklist'], ['training', 'Training'], ['orders', 'Orders']].map(([k, label]) => ({
       label, on: v === k, off: v !== k, pick: () => { this.setState({ view: k }); try { window.scrollTo(0, 0); } catch (e) {} }
     }));
     return {
       tabs,
       isHome: v === 'home', notHome: v !== 'home',
       goHome: () => { this.setState({ view: 'home' }); try { window.scrollTo(0, 0); } catch (e) {} },
-      hideCards: v !== 'cards', hideTraining: v !== 'training', hideRecipes: v !== 'recipes', hideChecklist: v !== 'checklist'
+      hideCards: v !== 'cards', hideTraining: v !== 'training', hideRecipes: v !== 'recipes', hideChecklist: v !== 'checklist', hideOrders: v !== 'orders'
     };
   }
 }

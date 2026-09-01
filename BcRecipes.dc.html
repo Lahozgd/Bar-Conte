@@ -46,6 +46,7 @@
 <div>
 <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px">
 <h3 style="font-weight:800;font-size:20px;letter-spacing:-0.02em;text-transform:uppercase;margin:0;color:#F7F4EA">{{ prod.name }}</h3>
+<sc-if value="{{ prod.hasOrigin }}"><span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#8A8674">{{ prod.origin }}</span></sc-if>
 <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#57A374">{{ prod.period }}</span>
 </div>
 <sc-if value="{{ prod.hasFood }}"><p style="font-size:12.5px;line-height:1.6;color:#8A8674;max-width:680px;margin:6px 0 16px"><b style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#55524A;margin-right:8px">Pairing</b>{{ prod.food }}</p></sc-if>
@@ -169,7 +170,7 @@ class Component extends DCLogic {
       if (sec.products) {
         const products = sec.products.map(prod => {
           const items = (prod.items || []).filter(matchesQ).map(it => mapItem(sec.slug + '::' + prod.name + '::' + it.name, it));
-          return { name: prod.name, period: prod.period || '', hasFood: !!prod.food, food: prod.food || '', hasNoItems: !(prod.items && prod.items.length), items };
+          return { name: prod.name, period: prod.period || '', hasOrigin: !!prod.origin, origin: prod.origin || '', hasFood: !!prod.food, food: prod.food || '', hasNoItems: !(prod.items && prod.items.length), items };
         }).filter(prod => !q || prod.items.length);
         const totalTally = products.reduce((n, p) => n + p.items.length, 0);
         if (products.length || !q) sections.push({ section: sec.section, tally: totalTally, hasNote: !!sec.note, note: sec.note || '', hasNoteList: false, noteList: [], hasProducts: true, hasItems: false, products, items: [] });
