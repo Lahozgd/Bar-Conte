@@ -92,7 +92,8 @@ class Component extends DCLogic {
     const toggleFilters = () => this.setState(s => ({ filtersOpen: !s.filtersOpen }));
     if (!d) return { q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All' };
     const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
-    const nameHit = q ? d.bottles.some(b => b.name.toLowerCase().indexOf(q) > -1) : false;
+    const words = q ? q.split(/\s+/).filter(Boolean) : [];
+    const nameHit = words.length ? d.bottles.some(b => { const n = b.name.toLowerCase(); return words.every(w => n.includes(w)); }) : false;
     const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
       const on = cat === (c.slug || 'all');
       return {
@@ -106,8 +107,9 @@ class Component extends DCLogic {
       const color = CAT[c.slug] || '#E5B84B';
       const items = d.bottles.filter(b => b.slug === c.slug).filter(b => {
         if (!q) return true;
-        if (nameHit) return b.name.toLowerCase().indexOf(q) > -1;
-        return (b.name + ' ' + b.desc.join(' ') + ' ' + b.origin + ' ' + b.serves.join(' ') + ' ' + (b.fact || '') + ' ' + (b.edge || '') + ' ' + (b.tier || '')).toLowerCase().includes(q);
+        if (nameHit) return words.every(w => b.name.toLowerCase().includes(w));
+        const blob = (b.name + ' ' + b.desc.join(' ') + ' ' + b.origin + ' ' + b.serves.join(' ') + ' ' + (b.fact || '') + ' ' + (b.edge || '') + ' ' + (b.tier || '')).toLowerCase();
+        return words.every(w => blob.includes(w));
       }).map(b => {
         const key = b.name;
         return {

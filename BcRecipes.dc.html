@@ -40,6 +40,55 @@
 </div>
 <sc-if value="{{ sec.hasNote }}"><p style="font-size:13px;line-height:1.7;color:#8A8674;max-width:680px;margin:0 0 12px">{{ sec.note }}</p></sc-if>
 <sc-if value="{{ sec.hasNoteList }}"><div style="display:flex;flex-direction:column;gap:5px;max-width:680px;margin:0 0 20px"><sc-for list="{{ sec.noteList }}" as="n" hint-placeholder-count="3"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.6;color:#8A8674">{{ n }}</span></sc-for></div></sc-if>
+<sc-if value="{{ sec.hasProducts }}">
+<div style="display:flex;flex-direction:column;gap:40px">
+<sc-for list="{{ sec.products }}" as="prod" hint-placeholder-count="2">
+<div>
+<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px">
+<h3 style="font-weight:800;font-size:20px;letter-spacing:-0.02em;text-transform:uppercase;margin:0;color:#F7F4EA">{{ prod.name }}</h3>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#57A374">{{ prod.period }}</span>
+</div>
+<sc-if value="{{ prod.hasFood }}"><p style="font-size:12.5px;line-height:1.6;color:#8A8674;max-width:680px;margin:6px 0 16px"><b style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#55524A;margin-right:8px">Pairing</b>{{ prod.food }}</p></sc-if>
+<sc-if value="{{ prod.hasNoItems }}"><p style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.08em;color:#55524A;margin:6px 0 0">Recipes to be added.</p></sc-if>
+<div style="display:flex;flex-direction:column;gap:2px;margin-top:14px">
+<sc-for list="{{ prod.items }}" as="it" hint-placeholder-count="3">
+<div style="border:2px solid #22251C;background:#0B0B0B">
+<button onClick="{{ it.toggle }}" style="all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:16px;padding:16px 18px" style-hover="background:#121212">
+<span style="flex:1 1 auto;font-weight:800;font-size:18px;letter-spacing:-0.02em;text-transform:uppercase;color:#F7F4EA">{{ it.name }}</span>
+<span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">{{ it.glassLabel }}</span>
+<sc-if value="{{ it.open }}"><span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#E5B84B">—</span></sc-if>
+<sc-if value="{{ it.closed }}"><span style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#55524A">+</span></sc-if>
+</button>
+<sc-if value="{{ it.open }}">
+<div style="padding:0 18px 22px">
+<sc-if value="{{ it.hasPairing }}"><p style="font-size:13.5px;line-height:1.6;color:#8A8674;margin:0 0 18px">{{ it.pairing }}</p></sc-if>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;background:#22251C;border:2px solid #22251C">
+<sc-if value="{{ it.hasSingle }}">
+<div style="background:#000;padding:18px 20px"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E5B84B;margin-bottom:12px">Single serve</span>
+<sc-for list="{{ it.single }}" as="l" hint-placeholder-count="3"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.9;color:#F7F4EA">{{ l }}</div></sc-for>
+<sc-if value="{{ it.hasSingleNote }}"><p style="font-size:11.5px;line-height:1.6;color:#55524A;margin:8px 0 0">{{ it.singleNote }}</p></sc-if></div>
+</sc-if>
+<sc-if value="{{ it.hasBatch }}">
+<div style="background:#000;padding:18px 20px"><span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#57A374;margin-bottom:12px">Pre batch</span>
+<sc-for list="{{ it.preBatch }}" as="l" hint-placeholder-count="3"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1.9;color:#F7F4EA">{{ l }}</div></sc-for>
+<sc-if value="{{ it.hasBatchNote }}"><p style="font-size:11.5px;line-height:1.6;color:#55524A;margin:8px 0 0">{{ it.preBatchNote }}</p></sc-if></div>
+</sc-if>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px 30px;margin-top:16px">
+<sc-for list="{{ it.meta }}" as="m" hint-placeholder-count="4">
+<span style="font-size:13px;color:#F7F4EA"><b style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#55524A;margin-right:9px">{{ m.label }}</b>{{ m.value }}</span>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ sec.hasItems }}">
 <div style="display:flex;flex-direction:column;gap:2px">
 <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="5">
 <div style="border:2px solid #22251C;background:#0B0B0B">
@@ -74,6 +123,7 @@
 </div>
 </sc-for>
 </div>
+</sc-if>
 </section>
 </sc-for>
 <sc-if value="{{ isEmpty }}"><p style="text-align:center;padding:80px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">No recipes match that search.</p></sc-if>
@@ -94,32 +144,39 @@ class Component extends DCLogic {
       const on = active === (s.slug || 'all');
       return { label: s.section, on, off: !on, pick: () => this.setState({ sec: s.slug || 'all', filtersOpen: false }) };
     });
+    const matchesQ = it => !q || (it.name + ' ' + (it.single || []).join(' ') + ' ' + (it.preBatch || []).join(' ') + ' ' + (it.garnish || '') + ' ' + (it.method || '')).toLowerCase().includes(q);
+    const mapItem = (key, it) => {
+      const open = !!this.state.open[key];
+      const glass = it.glass || it.glassGuess || '';
+      const meta = [];
+      if (it.glass) meta.push({ label: 'Glass', value: it.glass });
+      else if (it.glassGuess) meta.push({ label: 'Glass', value: it.glassGuess + ' (usual glass, not printed on the sheet)' });
+      if (it.ice) meta.push({ label: 'Ice', value: it.ice });
+      if (it.method) meta.push({ label: 'Method', value: it.method });
+      if (it.garnish) meta.push({ label: 'Garnish', value: it.garnish });
+      return {
+        name: it.name, glassLabel: glass, open, closed: !open,
+        hasPairing: !!it.pairing, pairing: it.pairing || '',
+        hasSingle: !!(it.single || it.singleNote), single: it.single || [], hasSingleNote: !!it.singleNote, singleNote: it.singleNote || '',
+        hasBatch: !!it.preBatch, preBatch: it.preBatch || [], hasBatchNote: !!it.preBatchNote, preBatchNote: it.preBatchNote || '',
+        meta,
+        toggle: () => this.setState(s => ({ open: Object.assign({}, s.open, { [key]: !s.open[key] }) }))
+      };
+    };
     const sections = [];
     d.forEach(sec => {
       if (active !== 'all' && active !== sec.slug) return;
-      const items = sec.items.filter(it => {
-        if (!q) return true;
-        return (it.name + ' ' + (it.single || []).join(' ') + ' ' + (it.preBatch || []).join(' ') + ' ' + (it.garnish || '') + ' ' + (it.method || '')).toLowerCase().includes(q);
-      }).map(it => {
-        const key = sec.slug + '::' + it.name;
-        const open = !!this.state.open[key];
-        const glass = it.glass || it.glassGuess || '';
-        const meta = [];
-        if (it.glass) meta.push({ label: 'Glass', value: it.glass });
-        else if (it.glassGuess) meta.push({ label: 'Glass', value: it.glassGuess + ' (usual glass, not printed on the sheet)' });
-        if (it.ice) meta.push({ label: 'Ice', value: it.ice });
-        if (it.method) meta.push({ label: 'Method', value: it.method });
-        if (it.garnish) meta.push({ label: 'Garnish', value: it.garnish });
-        return {
-          name: it.name, glassLabel: glass, open, closed: !open,
-          hasPairing: !!it.pairing, pairing: it.pairing || '',
-          hasSingle: !!(it.single || it.singleNote), single: it.single || [], hasSingleNote: !!it.singleNote, singleNote: it.singleNote || '',
-          hasBatch: !!it.preBatch, preBatch: it.preBatch || [], hasBatchNote: !!it.preBatchNote, preBatchNote: it.preBatchNote || '',
-          meta,
-          toggle: () => this.setState(s => ({ open: Object.assign({}, s.open, { [key]: !s.open[key] }) }))
-        };
-      });
-      if (items.length || (!sec.items.length && !q)) sections.push({ section: sec.section, tally: items.length, hasNote: !!sec.note, note: sec.note || '', hasNoteList: !!(sec.noteList && sec.noteList.length), noteList: sec.noteList || [], items });
+      if (sec.products) {
+        const products = sec.products.map(prod => {
+          const items = (prod.items || []).filter(matchesQ).map(it => mapItem(sec.slug + '::' + prod.name + '::' + it.name, it));
+          return { name: prod.name, period: prod.period || '', hasFood: !!prod.food, food: prod.food || '', hasNoItems: !(prod.items && prod.items.length), items };
+        }).filter(prod => !q || prod.items.length);
+        const totalTally = products.reduce((n, p) => n + p.items.length, 0);
+        if (products.length || !q) sections.push({ section: sec.section, tally: totalTally, hasNote: !!sec.note, note: sec.note || '', hasNoteList: false, noteList: [], hasProducts: true, hasItems: false, products, items: [] });
+        return;
+      }
+      const items = sec.items.filter(matchesQ).map(it => mapItem(sec.slug + '::' + it.name, it));
+      if (items.length || (!sec.items.length && !q)) sections.push({ section: sec.section, tally: items.length, hasNote: !!sec.note, note: sec.note || '', hasNoteList: !!(sec.noteList && sec.noteList.length), noteList: sec.noteList || [], hasProducts: false, hasItems: true, products: [], items });
     });
     const activeSec = d.filter(s => s.slug === active)[0];
     return {
