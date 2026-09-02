@@ -133,11 +133,11 @@
 const STORE_KEY = 'bc_order_v1';
 const ICE_ITEMS = ['Negroni Ice', 'OTR Small'];
 const KITCHEN_GROUPS = [
-  { title: 'Por botella', unit: 'bottle', unitTag: 'btl', items: ['Lemon juice', 'Lime juice', 'Cranberry juice', 'Pineapple juice'] },
-  { title: 'Por kilo', unit: 'kg', unitTag: 'kg', items: ['Lemon', 'Lime', 'Cucumber', 'Grapefruit', 'Chilli'] },
-  { title: 'Por punnet', unit: 'punnet', unitTag: 'pnt', items: ['Raspberries', 'Edible flowers'] },
-  { title: 'Por bolsa', unit: 'bag', unitTag: 'bag', items: ['Almond', 'Chocolate'] },
-  { title: 'Por unidad', unit: 'unit', unitTag: 'un', items: ['Mint'] }
+  { title: 'By the bottle', unit: 'bottle', unitTag: 'btl', items: ['Lemon juice', 'Lime juice', 'Cranberry juice', 'Pineapple juice'] },
+  { title: 'By the kilo', unit: 'kg', unitTag: 'kg', items: ['Lemon', 'Lime', 'Cucumber', 'Grapefruit', 'Chilli'] },
+  { title: 'By the punnet', unit: 'punnet', unitTag: 'pnt', items: ['Raspberries', 'Edible flowers'] },
+  { title: 'By the bag', unit: 'bag', unitTag: 'bag', items: ['Almond', 'Chocolate'] },
+  { title: 'By the unit', unit: 'unit', unitTag: 'un', items: ['Mint'] }
 ];
 function unitWord(unit, n) {
   switch (unit) {
@@ -218,7 +218,7 @@ class Component extends DCLogic {
     const clearOrder = () => { this.setState({ qty: {}, iceQty: {}, kitchenQty: {} }); this.persist({ qty: {}, iceQty: {}, kitchenQty: {} }); };
     const noop = () => {};
     const kind = this.state.kind;
-    const kindTabs = [['bottles', 'Bebidas'], ['ice', 'Hielo'], ['kitchen', 'Cocina']].map(([key, label]) => {
+    const kindTabs = [['bottles', 'Drinks'], ['ice', 'Ice'], ['kitchen', 'Kitchen']].map(([key, label]) => {
       const on = kind === key;
       return { label, on, off: !on, pick: () => this.setState({ kind: key }) };
     });
@@ -298,9 +298,9 @@ class Component extends DCLogic {
     const activeCat = d.categories.filter(c => c.slug === cat)[0];
 
     const sectionsMsg = [];
-    if (bebidasLines.length) sectionsMsg.push('Bebidas:\n' + bebidasLines.join('\n'));
-    if (cocinaLines.length) sectionsMsg.push('Cocina:\n' + cocinaLines.join('\n'));
-    if (hieloLines.length) sectionsMsg.push('Hielo:\n' + hieloLines.join('\n'));
+    if (bebidasLines.length) sectionsMsg.push('Drinks:\n' + bebidasLines.join('\n'));
+    if (cocinaLines.length) sectionsMsg.push('Kitchen:\n' + cocinaLines.join('\n'));
+    if (hieloLines.length) sectionsMsg.push('Ice:\n' + hieloLines.join('\n'));
     const hasOrder = sectionsMsg.length > 0;
     const dateStr = new Date().toLocaleDateString();
     const message = hasOrder ? ('Bar Conte order — ' + dateStr + '\n\n' + sectionsMsg.join('\n\n')) : '';
