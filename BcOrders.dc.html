@@ -62,13 +62,13 @@
 <div style="border:2px solid #22251C;background:#0B0B0B;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
 <span style="flex:1 1 200px;font-weight:700;font-size:15px;letter-spacing:-0.01em;color:#F7F4EA">{{ b.name }}</span>
 <div style="flex:0 0 auto;display:flex;align-items:center;gap:8px">
-<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#55524A;width:44px">bottles</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#F7F4EA;width:44px">bottles</span>
 <button onClick="{{ b.minusU }}" aria-label="Remove a bottle" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#E5B84B;color:#E5B84B">−</button>
 <span style="width:26px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#F7F4EA">{{ b.u }}</span>
 <button onClick="{{ b.plusU }}" aria-label="Add a bottle" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#E5B84B;color:#E5B84B">+</button>
 </div>
 <div style="flex:0 0 auto;display:flex;align-items:center;gap:8px">
-<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#55524A;width:34px">cases</span>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#F7F4EA;width:34px">cases</span>
 <button onClick="{{ b.minusC }}" aria-label="Remove a case" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#57A374;color:#57A374">−</button>
 <span style="width:26px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#F7F4EA">{{ b.c }}</span>
 <button onClick="{{ b.plusC }}" aria-label="Add a case" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#57A374;color:#57A374">+</button>
@@ -157,12 +157,12 @@ class Component extends DCLogic {
       totalU += u; totalC += c;
       const parts = [];
       if (u) parts.push(u + ' bottle' + (u > 1 ? 's' : ''));
-      if (c) parts.push(c + ' case' + (c > 1 ? 's' : ''));
-      orderLines.push('- ' + b.name + ': ' + parts.join(', '));
+      if (c) parts.push(c + ' case(s)');
+      orderLines.push('- ' + b.name + ': ' + parts.join(' + '));
     });
     const hasOrder = orderLines.length > 0;
     const dateStr = new Date().toLocaleDateString();
-    const message = hasOrder ? ('Bar Conte order — ' + dateStr + '\n\n' + orderLines.join('\n') + '\n\n' + orderLines.length + ' item(s) — ' + totalU + ' bottle(s), ' + totalC + ' case(s)') : '';
+    const message = hasOrder ? ('Bar Conte order — ' + dateStr + '\n\n' + orderLines.join('\n')) : '';
     const copyOrder = () => {
       if (!hasOrder) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
