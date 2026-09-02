@@ -13,32 +13,22 @@
 <p style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;color:#8A8674;margin:0">{{ errMsg }}</p>
 </div></sc-if>
 
-<div style="border:2px solid #22251C;background:#0B0B0B;padding:20px 22px;margin-bottom:26px">
-<p style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#E5B84B;margin:0 0 14px">Send order to</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px">
-<div>
-<label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8A8674;margin-bottom:6px">WhatsApp number (with country code)</label>
-<input type="text" value="{{ waPhone }}" onInput="{{ onWaPhone }}" placeholder="e.g. 5491122223333" autocomplete="off" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:11px 14px;border:2px solid #22251C;background:#000;color:#F7F4EA;outline:none;box-sizing:border-box" style-focus="border-color:#E5B84B">
-</div>
-<div>
-<label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8A8674;margin-bottom:6px">Email address</label>
-<input type="text" value="{{ email }}" onInput="{{ onEmail }}" placeholder="orders@paramount.com" autocomplete="off" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:11px 14px;border:2px solid #22251C;background:#000;color:#F7F4EA;outline:none;box-sizing:border-box" style-focus="border-color:#E5B84B">
-</div>
-</div>
-<p style="font-size:11px;line-height:1.5;color:#55524A;margin:0">Saved on this device only. Nothing is sent automatically — the buttons below open WhatsApp or your mail app with the order already typed out, so you just review and hit send.</p>
-</div>
-
-<div style="position:sticky;top:0;z-index:20;background:rgba(0,0,0,0.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:2px solid #22251C;padding:16px 20px;margin-bottom:30px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+<div style="position:sticky;top:0;z-index:20;background:rgba(0,0,0,0.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:2px solid #22251C;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
 <div style="flex:1 1 auto;min-width:160px">
 <span style="display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8A8674;margin-bottom:3px">Order</span>
 <span style="font-weight:800;font-size:17px;color:#F7F4EA">{{ orderSummary }}</span>
 </div>
-<sc-if value="{{ hasOrder }}"><button onClick="{{ sendWhatsApp }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #57A374;background:#57A374;color:#000;padding:12px 18px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Send · WhatsApp</button></sc-if>
-<sc-if value="{{ noOrder }}"><button style="flex:0 0 auto;cursor:not-allowed;border:2px solid #22251C;background:#000;color:#55524A;padding:12px 18px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Send · WhatsApp</button></sc-if>
-<sc-if value="{{ hasOrder }}"><button onClick="{{ sendEmail }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #E5B84B;background:#E5B84B;color:#000;padding:12px 18px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Send · Email</button></sc-if>
-<sc-if value="{{ noOrder }}"><button style="flex:0 0 auto;cursor:not-allowed;border:2px solid #22251C;background:#000;color:#55524A;padding:12px 18px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Send · Email</button></sc-if>
+<sc-if value="{{ hasOrder }}"><button onClick="{{ copyOrder }}" style="flex:0 0 auto;cursor:pointer;border:2px solid {{ copyBorder }};background:{{ copyBg }};color:#000;padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">{{ copyLabel }}</button></sc-if>
+<sc-if value="{{ noOrder }}"><button style="flex:0 0 auto;cursor:not-allowed;border:2px solid #22251C;background:#000;color:#55524A;padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Copy order</button></sc-if>
 <sc-if value="{{ hasOrder }}"><button onClick="{{ clearOrder }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #22251C;background:#000;color:#8A8674;padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase" style-hover="border-color:#E0796A;color:#E0796A">Clear</button></sc-if>
 </div>
+<sc-if value="{{ hasOrder }}">
+<div style="border:2px solid #22251C;background:#0B0B0B;padding:18px 20px;margin-bottom:30px">
+<p style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#8A8674;margin:0 0 10px">Message ready to paste</p>
+<textarea readonly value="{{ message }}" onInput="{{ noop }}" style="width:100%;min-height:160px;resize:vertical;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.6;padding:14px 16px;border:2px solid #22251C;background:#000;color:#F7F4EA;outline:none;box-sizing:border-box;margin-bottom:8px" style-focus="border-color:#E5B84B"></textarea>
+<p style="font-size:11px;line-height:1.5;color:#55524A;margin:0">Tap "{{ copyLabel }}" above, then paste it into WhatsApp, email, or wherever you need to send it — or just select the text here by hand.</p>
+</div>
+</sc-if>
 
 <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
 <div style="position:relative;display:block">
@@ -92,17 +82,31 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 const STORE_KEY = 'bc_order_v1';
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) { return false; }
+}
 class Component extends DCLogic {
-  state = { data: null, q: '', cat: 'all', filtersOpen: false, qty: {}, waPhone: '', email: '', err: '' };
+  state = { data: null, q: '', cat: 'all', filtersOpen: false, qty: {}, err: '', copied: false };
   componentDidMount() {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) {}
-    this.setState({ qty: saved.qty || {}, waPhone: saved.waPhone || '', email: saved.email || '' });
+    this.setState({ qty: saved.qty || {} });
     if (window.BC_DATA && window.BC_DATA.bottles) { this.setState({ data: window.BC_DATA.bottles }); return; }
     fetch(new URL('data/bottles.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/bottles.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('bottles.json', e); this.setState({ err: String(e && e.message || e) }); });
   }
   persist(next) {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ qty: next.qty !== undefined ? next.qty : this.state.qty, waPhone: next.waPhone !== undefined ? next.waPhone : this.state.waPhone, email: next.email !== undefined ? next.email : this.state.email })); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ qty: next.qty !== undefined ? next.qty : this.state.qty })); } catch (e) {}
+  }
+  flashCopied() {
+    this.setState({ copied: true });
+    setTimeout(() => this.setState({ copied: false }), 1800);
   }
   setQty(name, field, delta) {
     this.setState(s => {
@@ -120,10 +124,9 @@ class Component extends DCLogic {
     const clearQ = () => this.setState({ q: '' });
     const hasQ = this.state.q.length > 0;
     const toggleFilters = () => this.setState(s => ({ filtersOpen: !s.filtersOpen }));
-    const onWaPhone = e => { const v = e.target.value; this.setState({ waPhone: v }); this.persist({ waPhone: v }); };
-    const onEmail = e => { const v = e.target.value; this.setState({ email: v }); this.persist({ email: v }); };
     const clearOrder = () => { this.setState({ qty: {} }); this.persist({ qty: {} }); };
-    if (!d) return { q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All', waPhone: this.state.waPhone, email: this.state.email, onWaPhone, onEmail, orderSummary: 'No items yet', hasOrder: false, noOrder: true, sendWhatsApp: () => {}, sendEmail: () => {}, clearOrder };
+    const noop = () => {};
+    if (!d) return { q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All', orderSummary: 'No items yet', hasOrder: false, noOrder: true, message: '', copyOrder: () => {}, copyLabel: 'Copy order', copyBorder: '#22251C', copyBg: '#22251C', clearOrder, noop };
     const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
     const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
       const on = cat === (c.slug || 'all');
@@ -159,27 +162,26 @@ class Component extends DCLogic {
     });
     const hasOrder = orderLines.length > 0;
     const dateStr = new Date().toLocaleDateString();
-    const buildMessage = () => 'Bar Conte order — ' + dateStr + '\n\n' + orderLines.join('\n') + '\n\n' + orderLines.length + ' item(s) — ' + totalU + ' bottle(s), ' + totalC + ' case(s)';
-    const sendWhatsApp = () => {
+    const message = hasOrder ? ('Bar Conte order — ' + dateStr + '\n\n' + orderLines.join('\n') + '\n\n' + orderLines.length + ' item(s) — ' + totalU + ' bottle(s), ' + totalC + ' case(s)') : '';
+    const copyOrder = () => {
       if (!hasOrder) return;
-      const phone = (this.state.waPhone || '').replace(/[^0-9]/g, '');
-      const url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(buildMessage());
-      window.open(url, '_blank');
-    };
-    const sendEmail = () => {
-      if (!hasOrder) return;
-      const url = 'mailto:' + encodeURIComponent(this.state.email || '') + '?subject=' + encodeURIComponent('Bar Conte order — ' + dateStr) + '&body=' + encodeURIComponent(buildMessage());
-      window.location.href = url;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(message).then(() => this.flashCopied()).catch(() => { fallbackCopy(message); this.flashCopied(); });
+      } else {
+        fallbackCopy(message);
+        this.flashCopied();
+      }
     };
     const orderSummary = hasOrder ? (orderLines.length + ' bottle' + (orderLines.length > 1 ? 's' : '') + ' selected — ' + totalU + ' unit(s), ' + totalC + ' case(s)') : 'No items yet';
+    const copyLabel = this.state.copied ? '✓ Copied' : 'Copy order';
+    const copyColor = this.state.copied ? '#57A374' : '#E5B84B';
 
     return {
       q: this.state.q, onSearch, clearQ, hasQ, chips, sections, isEmpty: sections.length === 0,
       toggleFilters, filtersOpen: this.state.filtersOpen, filtersShut: !this.state.filtersOpen,
       catLabel: activeCat ? activeCat.title.replace(' / ', ' & ') : 'All categories',
       hasErr: !!this.state.err, errMsg: this.state.err || '',
-      waPhone: this.state.waPhone, email: this.state.email, onWaPhone, onEmail,
-      orderSummary, hasOrder, noOrder: !hasOrder, sendWhatsApp, sendEmail, clearOrder
+      orderSummary, hasOrder, noOrder: !hasOrder, message, copyOrder, copyLabel, copyBorder: copyColor, copyBg: copyColor, clearOrder, noop
     };
   }
 }
