@@ -30,6 +30,14 @@
 </div>
 </sc-if>
 
+<div style="display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap">
+<sc-for list="{{ kindTabs }}" as="kt" hint-placeholder-count="3">
+<sc-if value="{{ kt.on }}"><button onClick="{{ kt.pick }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #E5B84B;background:#E5B84B;color:#000;padding:12px 22px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase">{{ kt.label }}</button></sc-if>
+<sc-if value="{{ kt.off }}"><button onClick="{{ kt.pick }}" style="flex:0 0 auto;cursor:pointer;border:2px solid #22251C;background:#000;color:#8A8674;padding:12px 22px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase" style-hover="border-color:#57A374;color:#F7F4EA">{{ kt.label }}</button></sc-if>
+</sc-for>
+</div>
+
+<sc-if value="{{ showBottles }}">
 <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:40px">
 <div style="position:relative;display:block">
 <input type="text" value="{{ q }}" onInput="{{ onSearch }}" placeholder="Search a bottle" autocomplete="off" style="width:100%;font-family:Archivo,sans-serif;font-size:15px;padding:15px 52px 15px 18px;border:2px solid #22251C;background:#0B0B0B;color:#F7F4EA;outline:none" style-focus="border-color:#E5B84B">
@@ -79,9 +87,68 @@
 </section>
 </sc-for>
 <sc-if value="{{ isEmpty }}"><p style="text-align:center;padding:80px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#55524A">No bottles match that search.</p></sc-if>
+</sc-if>
+
+<sc-if value="{{ showIce }}">
+<div style="display:flex;flex-direction:column;gap:2px;margin-bottom:40px">
+<sc-for list="{{ iceItems }}" as="i" hint-placeholder-count="2">
+<div style="border:2px solid #22251C;background:#0B0B0B;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+<span style="flex:1 1 200px;font-weight:700;font-size:15px;letter-spacing:-0.01em;color:#F7F4EA">{{ i.name }}</span>
+<div style="flex:0 0 auto;display:flex;align-items:center;gap:8px">
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#F7F4EA;width:44px">cases</span>
+<button onClick="{{ i.minus }}" aria-label="Remove a case" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#57A374;color:#57A374">−</button>
+<span style="width:26px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#F7F4EA">{{ i.c }}</span>
+<button onClick="{{ i.plus }}" aria-label="Add a case" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#57A374;color:#57A374">+</button>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ showKitchen }}">
+<sc-for list="{{ kitchenSections }}" as="ksec" hint-placeholder-count="5">
+<section style="margin-bottom:38px">
+<div style="display:flex;align-items:baseline;gap:16px;border-bottom:3px solid #E5B84B;padding-bottom:12px;margin-bottom:14px">
+<h2 style="font-weight:900;font-size:clamp(16px,2.2vw,22px);line-height:1;letter-spacing:-0.03em;text-transform:uppercase;margin:0;color:#F7F4EA;flex:1">{{ ksec.title }}</h2>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#6E6A5A">{{ ksec.tally }}</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<sc-for list="{{ ksec.items }}" as="k" hint-placeholder-count="4">
+<div style="border:2px solid #22251C;background:#0B0B0B;padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+<span style="flex:1 1 200px;font-weight:700;font-size:15px;letter-spacing:-0.01em;color:#F7F4EA">{{ k.name }}</span>
+<div style="flex:0 0 auto;display:flex;align-items:center;gap:8px">
+<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#F7F4EA;width:44px">{{ k.unitTag }}</span>
+<button onClick="{{ k.minus }}" aria-label="Remove one" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#E5B84B;color:#E5B84B">−</button>
+<span style="width:26px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#F7F4EA">{{ k.n }}</span>
+<button onClick="{{ k.plus }}" aria-label="Add one" style="all:unset;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:2px solid #22251C;color:#8A8674;font-size:16px" style-hover="border-color:#E5B84B;color:#E5B84B">+</button>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 const STORE_KEY = 'bc_order_v1';
+const ICE_ITEMS = ['Negroni Ice', 'OTR Small'];
+const KITCHEN_GROUPS = [
+  { title: 'Por botella', unit: 'bottle', unitTag: 'btl', items: ['Lemon juice', 'Lime juice', 'Cranberry juice', 'Pineapple juice'] },
+  { title: 'Por kilo', unit: 'kg', unitTag: 'kg', items: ['Lemon', 'Lime', 'Cucumber', 'Grapefruit', 'Chilli'] },
+  { title: 'Por punnet', unit: 'punnet', unitTag: 'pnt', items: ['Raspberries', 'Edible flowers'] },
+  { title: 'Por bolsa', unit: 'bag', unitTag: 'bag', items: ['Almond', 'Chocolate'] },
+  { title: 'Por unidad', unit: 'unit', unitTag: 'un', items: ['Mint'] }
+];
+function unitWord(unit, n) {
+  switch (unit) {
+    case 'bottle': return 'bottle' + (n > 1 ? 's' : '');
+    case 'kg': return 'kg';
+    case 'punnet': return 'punnet(s)';
+    case 'bag': return 'bag(s)';
+    case 'unit': return 'unit(s)';
+    default: return unit;
+  }
+}
 function fallbackCopy(text) {
   try {
     const ta = document.createElement('textarea');
@@ -93,16 +160,22 @@ function fallbackCopy(text) {
   } catch (e) { return false; }
 }
 class Component extends DCLogic {
-  state = { data: null, q: '', cat: 'all', filtersOpen: false, qty: {}, err: '', copied: false };
+  state = { data: null, q: '', cat: 'all', filtersOpen: false, qty: {}, iceQty: {}, kitchenQty: {}, kind: 'bottles', err: '', copied: false };
   componentDidMount() {
     let saved = {};
     try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) {}
-    this.setState({ qty: saved.qty || {} });
+    this.setState({ qty: saved.qty || {}, iceQty: saved.iceQty || {}, kitchenQty: saved.kitchenQty || {} });
     if (window.BC_DATA && window.BC_DATA.bottles) { this.setState({ data: window.BC_DATA.bottles }); return; }
     fetch(new URL('data/bottles.json', document.baseURI).href).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status + ' on data/bottles.json'); return r.json(); }).then(d => this.setState({ data: d })).catch(e => { console.error('bottles.json', e); this.setState({ err: String(e && e.message || e) }); });
   }
   persist(next) {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ qty: next.qty !== undefined ? next.qty : this.state.qty })); } catch (e) {}
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        qty: next.qty !== undefined ? next.qty : this.state.qty,
+        iceQty: next.iceQty !== undefined ? next.iceQty : this.state.iceQty,
+        kitchenQty: next.kitchenQty !== undefined ? next.kitchenQty : this.state.kitchenQty
+      }));
+    } catch (e) {}
   }
   flashCopied() {
     this.setState({ copied: true });
@@ -118,15 +191,92 @@ class Component extends DCLogic {
       return { qty };
     });
   }
+  setIceQty(name, delta) {
+    this.setState(s => {
+      const cur = s.iceQty[name] || 0;
+      const nextVal = Math.max(0, cur + delta);
+      const iceQty = Object.assign({}, s.iceQty, { [name]: nextVal });
+      this.persist({ iceQty });
+      return { iceQty };
+    });
+  }
+  setKitchenQty(name, delta) {
+    this.setState(s => {
+      const cur = s.kitchenQty[name] || 0;
+      const nextVal = Math.max(0, cur + delta);
+      const kitchenQty = Object.assign({}, s.kitchenQty, { [name]: nextVal });
+      this.persist({ kitchenQty });
+      return { kitchenQty };
+    });
+  }
   renderVals() {
     const d = this.state.data;
     const onSearch = e => this.setState({ q: e.target.value });
     const clearQ = () => this.setState({ q: '' });
     const hasQ = this.state.q.length > 0;
     const toggleFilters = () => this.setState(s => ({ filtersOpen: !s.filtersOpen }));
-    const clearOrder = () => { this.setState({ qty: {} }); this.persist({ qty: {} }); };
+    const clearOrder = () => { this.setState({ qty: {}, iceQty: {}, kitchenQty: {} }); this.persist({ qty: {}, iceQty: {}, kitchenQty: {} }); };
     const noop = () => {};
-    if (!d) return { q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '', toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All', orderSummary: 'No items yet', hasOrder: false, noOrder: true, message: '', copyOrder: () => {}, copyLabel: 'Copy order', copyBorder: '#22251C', copyBg: '#22251C', clearOrder, noop };
+    const kind = this.state.kind;
+    const kindTabs = [['bottles', 'Bebidas'], ['ice', 'Hielo'], ['kitchen', 'Cocina']].map(([key, label]) => {
+      const on = kind === key;
+      return { label, on, off: !on, pick: () => this.setState({ kind: key }) };
+    });
+    const showBottles = kind === 'bottles', showIce = kind === 'ice', showKitchen = kind === 'kitchen';
+
+    const iceItems = ICE_ITEMS.map(name => {
+      const c = this.state.iceQty[name] || 0;
+      return { name, c, minus: () => this.setIceQty(name, -1), plus: () => this.setIceQty(name, 1) };
+    });
+
+    const kitchenSections = KITCHEN_GROUPS.map(g => ({
+      title: g.title, tally: g.items.length,
+      items: g.items.map(name => {
+        const n = this.state.kitchenQty[name] || 0;
+        return { name, n, unitTag: g.unitTag, minus: () => this.setKitchenQty(name, -1), plus: () => this.setKitchenQty(name, 1) };
+      })
+    }));
+
+    // Order message pieces (built regardless of which tab is active — the order spans all three)
+    const bebidasLines = [];
+    let totalItems = 0;
+    if (d) {
+      d.bottles.forEach(b => {
+        const entry = this.state.qty[b.name];
+        if (!entry) return;
+        const u = entry.u || 0, c = entry.c || 0;
+        if (!u && !c) return;
+        const parts = [];
+        if (u) parts.push(u + ' bottle' + (u > 1 ? 's' : ''));
+        if (c) parts.push(c + ' case(s)');
+        bebidasLines.push('- ' + b.name + ': ' + parts.join(' + '));
+      });
+    }
+    const cocinaLines = [];
+    KITCHEN_GROUPS.forEach(g => {
+      g.items.forEach(name => {
+        const n = this.state.kitchenQty[name] || 0;
+        if (!n) return;
+        cocinaLines.push('- ' + name + ': ' + n + ' ' + unitWord(g.unit, n));
+      });
+    });
+    const hieloLines = [];
+    ICE_ITEMS.forEach(name => {
+      const c = this.state.iceQty[name] || 0;
+      if (!c) return;
+      hieloLines.push('- ' + name + ': ' + c + ' case(s)');
+    });
+    totalItems = bebidasLines.length + cocinaLines.length + hieloLines.length;
+
+    if (!d) return {
+      q: this.state.q, onSearch, clearQ, hasQ, chips: [], sections: [], isEmpty: false, hasErr: !!this.state.err, errMsg: this.state.err || '',
+      toggleFilters, filtersOpen: false, filtersShut: true, catLabel: 'All',
+      kindTabs, showBottles: false, showIce, showKitchen, iceItems, kitchenSections,
+      orderSummary: totalItems ? (totalItems + ' item(s) selected') : 'No items yet',
+      hasOrder: !!(cocinaLines.length || hieloLines.length), noOrder: !(cocinaLines.length || hieloLines.length),
+      message: '', copyOrder: () => {}, copyLabel: 'Copy order', copyBorder: '#22251C', copyBg: '#22251C', clearOrder, noop
+    };
+
     const q = this.state.q.trim().toLowerCase(), cat = this.state.cat;
     const chips = [{ slug: 'all', title: 'All' }].concat(d.categories).map(c => {
       const on = cat === (c.slug || 'all');
@@ -147,22 +297,13 @@ class Component extends DCLogic {
     });
     const activeCat = d.categories.filter(c => c.slug === cat)[0];
 
-    const orderLines = [];
-    let totalU = 0, totalC = 0;
-    d.bottles.forEach(b => {
-      const entry = this.state.qty[b.name];
-      if (!entry) return;
-      const u = entry.u || 0, c = entry.c || 0;
-      if (!u && !c) return;
-      totalU += u; totalC += c;
-      const parts = [];
-      if (u) parts.push(u + ' bottle' + (u > 1 ? 's' : ''));
-      if (c) parts.push(c + ' case(s)');
-      orderLines.push('- ' + b.name + ': ' + parts.join(' + '));
-    });
-    const hasOrder = orderLines.length > 0;
+    const sectionsMsg = [];
+    if (bebidasLines.length) sectionsMsg.push('Bebidas:\n' + bebidasLines.join('\n'));
+    if (cocinaLines.length) sectionsMsg.push('Cocina:\n' + cocinaLines.join('\n'));
+    if (hieloLines.length) sectionsMsg.push('Hielo:\n' + hieloLines.join('\n'));
+    const hasOrder = sectionsMsg.length > 0;
     const dateStr = new Date().toLocaleDateString();
-    const message = hasOrder ? ('Bar Conte order — ' + dateStr + '\n\n' + orderLines.join('\n')) : '';
+    const message = hasOrder ? ('Bar Conte order — ' + dateStr + '\n\n' + sectionsMsg.join('\n\n')) : '';
     const copyOrder = () => {
       if (!hasOrder) return;
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -172,15 +313,16 @@ class Component extends DCLogic {
         this.flashCopied();
       }
     };
-    const orderSummary = hasOrder ? (orderLines.length + ' bottle' + (orderLines.length > 1 ? 's' : '') + ' selected — ' + totalU + ' unit(s), ' + totalC + ' case(s)') : 'No items yet';
+    const orderSummary = hasOrder ? (totalItems + ' item' + (totalItems > 1 ? 's' : '') + ' selected') : 'No items yet';
     const copyLabel = this.state.copied ? '✓ Copied' : 'Copy order';
     const copyColor = this.state.copied ? '#57A374' : '#E5B84B';
 
     return {
-      q: this.state.q, onSearch, clearQ, hasQ, chips, sections, isEmpty: sections.length === 0,
+      q: this.state.q, onSearch, clearQ, hasQ, chips, sections, isEmpty: showBottles && sections.length === 0,
       toggleFilters, filtersOpen: this.state.filtersOpen, filtersShut: !this.state.filtersOpen,
       catLabel: activeCat ? activeCat.title.replace(' / ', ' & ') : 'All categories',
       hasErr: !!this.state.err, errMsg: this.state.err || '',
+      kindTabs, showBottles, showIce, showKitchen, iceItems, kitchenSections,
       orderSummary, hasOrder, noOrder: !hasOrder, message, copyOrder, copyLabel, copyBorder: copyColor, copyBg: copyColor, clearOrder, noop
     };
   }
